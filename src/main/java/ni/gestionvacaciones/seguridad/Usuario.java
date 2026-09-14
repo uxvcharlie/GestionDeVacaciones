@@ -74,6 +74,13 @@ public class Usuario {
         return bloqueadoHasta != null && bloqueadoHasta.isAfter(Instant.now());
     }
 
+    /** "Brenda" de "Brenda Vásquez", para hablarle a la persona por su nombre. */
+    public String primerNombre() {
+        String limpio = nombreCompleto == null ? "" : nombreCompleto.trim();
+        int espacio = limpio.indexOf(' ');
+        return espacio < 0 ? limpio : limpio.substring(0, espacio);
+    }
+
     // ---------------------------------------------------------------------
     // Getters y setters
     // ---------------------------------------------------------------------
