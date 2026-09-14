@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ===================================================================
+         El "padre" de Spring Boot decide, por nosotros, qué versión de cada
+         librería es compatible con cuál. Por eso abajo casi ninguna
+         dependencia lleva <version>: la hereda de acá.
+         4.1.1 es la última versión estable publicada y su soporte gratuito
+         llega hasta julio de 2027.
+         =================================================================== -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>ni.gestionvacaciones</groupId>
+    <artifactId>gestion-vacaciones</artifactId>
+    <version>0.1.0</version>
+    <name>Gestión de Vacaciones</name>
+    <description>Registro y control de vacaciones, citas médicas y permisos</description>
+
+    <properties>
+        <!-- Compilamos para Java 21. Podés COMPILAR con un JDK 21 o superior
+             (25 también sirve): el resultado siempre es compatible con 21. -->
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- ============================ Aplicación ==================== -->
+
+        <!-- Servidor web embebido (Tomcat) y Spring MVC -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Login, contraseñas, CSRF, cabeceras de seguridad -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Acceso a la base de datos con JPA/Hibernate -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- Validación de formularios (@NotBlank, @Size, ...) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Plantillas HTML del lado del servidor -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- /actuator/health: lo usa Render para saber si la app está viva -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- ============================ Base de datos ================= -->
+
+        <!-- Flyway crea y versiona el esquema. El esquema NUNCA se toca a mano.
+             OJO: en Spring Boot 4 hay que pedir el módulo "spring-boot-flyway",
+             no solo "flyway-core". Boot 4 partió sus autoconfiguraciones en
+             módulos separados, y con flyway-core a secas la librería queda en
+             el classpath pero NADIE la ejecuta al arrancar: las migraciones
+             nunca correrían y no habría ningún mensaje de error. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-flyway</artifactId>
+        </dependency>
+        <!-- Soporte específico de PostgreSQL para Flyway. -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
+        <!-- Controlador JDBC de PostgreSQL (solo en tiempo de ejecución) -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- ============================ Pruebas ======================= -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Testcontainers: levanta un PostgreSQL de verdad, descartable,
+             para cada corrida de pruebas. Nada de bases en memoria. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
