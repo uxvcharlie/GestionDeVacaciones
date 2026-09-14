@@ -268,6 +268,8 @@ src/main/tailwind/  archivo fuente de los estilos
 - [x] **Fase 3** — Solicitudes y saldos: descuento automático, anulación con
       devolución, ajuste manual, saldo negativo solo con autorización y
       bitácora de esas acciones.
-- [ ] **Fase 4** — Interfaz y experiencia de uso.
+- [x] **Fase 4** — Interfaz y experiencia de uso: tablero con saludo según la
+      hora, buscador, resumen del mes, últimas solicitudes, aviso antes de que
+      venza la sesión, errores amables y reactivación de funcionarios.
 - [ ] **Fase 5** — Administración y seguridad.
 - [ ] **Fase 6** — Despliegue, respaldos y manual.
