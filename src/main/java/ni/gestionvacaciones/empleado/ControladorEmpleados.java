@@ -1,7 +1,9 @@
 package ni.gestionvacaciones.empleado;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import ni.gestionvacaciones.comun.ConversorTiempo;
+import ni.gestionvacaciones.comun.ReglaDeNegocioException;
 import ni.gestionvacaciones.parametro.ServicioParametros;
 import ni.gestionvacaciones.saldo.MovimientoSaldo;
 import ni.gestionvacaciones.saldo.ServicioSaldo;
@@ -26,7 +28,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Pantallas de funcionarios: listado con buscador, alta, ficha, edición y baja.
+ * Pantallas de funcionarios: listado con buscador, alta, ficha, edición, baja
+ * y reactivación.
  *
  * <p>Toda acción que cambia datos es un POST con token CSRF. Después de
  * guardar se redirige (patrón POST → redirección → GET), así recargar la
@@ -84,6 +87,7 @@ public class ControladorEmpleados {
     public String crear(@Valid @ModelAttribute("formulario") FormularioEmpleado formulario,
                         BindingResult errores,
                         Principal principal,
+                        HttpServletRequest peticion,
                         Model modelo,
                         RedirectAttributes redireccion) {
         if (errores.hasErrors()) {
@@ -91,7 +95,7 @@ public class ControladorEmpleados {
             return VISTA_FORMULARIO;
         }
 
-        Empleado empleado = servicioEmpleados.crear(formulario, idUsuarioActual(principal));
+        Empleado empleado = servicioEmpleados.crear(formulario, idUsuarioActual(principal), peticion.getRemoteAddr());
 
         redireccion.addFlashAttribute("mensajeExito", "Listo, se registró a " + empleado.getNombreCompleto()
                 + " con un saldo de "
@@ -163,10 +167,39 @@ public class ControladorEmpleados {
     }
 
     @PostMapping("/{id}/baja")
-    public String darDeBaja(@PathVariable Long id, RedirectAttributes redireccion) {
-        Empleado empleado = servicioEmpleados.darDeBaja(id);
-        redireccion.addFlashAttribute("mensajeExito",
-                "Se dio de baja a " + empleado.getNombreCompleto() + ". Su historial se conserva.");
+    public String darDeBaja(@PathVariable Long id,
+                            Principal principal,
+                            HttpServletRequest peticion,
+                            RedirectAttributes redireccion) {
+        try {
+            Empleado empleado = servicioEmpleados.darDeBaja(id, idUsuarioActual(principal), peticion.getRemoteAddr());
+            redireccion.addFlashAttribute("mensajeExito",
+                    "Se dio de baja a " + empleado.getNombreCompleto() + ". Su historial se conserva.");
+        } catch (ReglaDeNegocioException e) {
+            redireccion.addFlashAttribute("mensajeAviso", e.getMessage());
+        }
+        return "redirect:/empleados/" + id;
+    }
+
+    /** La reactivación no destruye nada, así que no pide confirmación aparte. */
+    @PostMapping("/{id}/reactivar")
+    public String reactivar(@PathVariable Long id,
+                            Principal principal,
+                            HttpServletRequest peticion,
+                            RedirectAttributes redireccion) {
+        try {
+            Empleado empleado = servicioEmpleados.reactivar(id, idUsuarioActual(principal), peticion.getRemoteAddr());
+            redireccion.addFlashAttribute("mensajeExito", "Se reactivó a " + empleado.getNombreCompleto()
+                    + ". Vuelve a aparecer al registrar solicitudes, con el mismo saldo e historial.");
+        } catch (ReglaDeNegocioException e) {
+            redireccion.addFlashAttribute("mensajeAviso", e.getMessage());
+        }
+        return "redirect:/empleados/" + id;
+    }
+
+    /** Si alguien abre la dirección de reactivar directo, va a la ficha. */
+    @GetMapping("/{id}/reactivar")
+    public String reactivarDesdeDireccion(@PathVariable Long id) {
         return "redirect:/empleados/" + id;
     }
 

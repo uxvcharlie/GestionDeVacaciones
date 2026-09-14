@@ -7,6 +7,9 @@ package ni.gestionvacaciones.auditoria;
  */
 public enum AccionAuditoria {
 
+    FUNCIONARIO_REGISTRADO("Registró a un funcionario"),
+    FUNCIONARIO_DADO_DE_BAJA("Dio de baja a un funcionario"),
+    FUNCIONARIO_REACTIVADO("Reactivó a un funcionario"),
     SOLICITUD_REGISTRADA("Registró una solicitud"),
     SOLICITUD_ANULADA("Anuló una solicitud"),
     SALDO_AJUSTADO("Ajustó un saldo a mano"),

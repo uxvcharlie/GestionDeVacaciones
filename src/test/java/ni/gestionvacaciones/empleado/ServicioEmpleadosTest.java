@@ -1,6 +1,10 @@
 package ni.gestionvacaciones.empleado;
 
 import ni.gestionvacaciones.PruebaConPostgres;
+import ni.gestionvacaciones.auditoria.Auditoria;
+import ni.gestionvacaciones.auditoria.AuditoriaRepositorio;
+import ni.gestionvacaciones.auditoria.ServicioAuditoria;
+import ni.gestionvacaciones.comun.ReglaDeNegocioException;
 import ni.gestionvacaciones.saldo.MovimientoSaldo;
 import ni.gestionvacaciones.saldo.ServicioSaldo;
 import ni.gestionvacaciones.saldo.TipoMovimiento;
@@ -32,6 +36,9 @@ class ServicioEmpleadosTest extends PruebaConPostgres {
 
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
+
+    @Autowired
+    private AuditoriaRepositorio auditoriaRepositorio;
 
     @Test
     @DisplayName("Registrar con 10 días guarda 4800 minutos y deja su movimiento SALDO_INICIAL")
@@ -90,7 +97,7 @@ class ServicioEmpleadosTest extends PruebaConPostgres {
     void bajaLogicaConservaHistorial() {
         Empleado empleado = servicioEmpleados.crear(formulario("Prueba Baja Lógica", 5, 0), idAdmin());
 
-        servicioEmpleados.darDeBaja(empleado.getId());
+        servicioEmpleados.darDeBaja(empleado.getId(), idAdmin(), null);
 
         Empleado guardado = empleadoRepositorio.findById(empleado.getId()).orElseThrow();
         assertThat(guardado.isActivo()).isFalse();
@@ -122,6 +129,31 @@ class ServicioEmpleadosTest extends PruebaConPostgres {
 
         assertThat(empleadoRepositorio.findById(empleado.getId()).orElseThrow().getSaldoVacacionesMinutos())
                 .isZero();
+    }
+
+    @Test
+    @DisplayName("Reactivar deshace la baja sin tocar el saldo, y registrar, dar de baja y reactivar quedan en la bitácora")
+    void reactivar() {
+        Empleado empleado = servicioEmpleados.crear(formulario("Prueba Reactivación", 2, 0), idAdmin());
+        servicioEmpleados.darDeBaja(empleado.getId(), idAdmin(), "10.0.0.9");
+        assertThatThrownBy(() -> servicioEmpleados.darDeBaja(empleado.getId(), idAdmin(), null))
+                .isInstanceOf(ReglaDeNegocioException.class).hasMessageContaining("ya estaba de baja");
+
+        servicioEmpleados.reactivar(empleado.getId(), idAdmin(), "10.0.0.9");
+
+        Empleado guardado = empleadoRepositorio.findById(empleado.getId()).orElseThrow();
+        assertThat(guardado.isActivo()).isTrue();
+        assertThat(guardado.getSaldoVacacionesMinutos()).isEqualTo(960);
+        assertThat(servicioEmpleados.buscar("Prueba Reactivación", false))
+                .extracting(Empleado::getId).containsExactly(empleado.getId());
+        assertThat(servicioSaldo.historial(empleado.getId())).hasSize(1);
+        assertThatThrownBy(() -> servicioEmpleados.reactivar(empleado.getId(), idAdmin(), null))
+                .isInstanceOf(ReglaDeNegocioException.class).hasMessageContaining("no está de baja");
+
+        assertThat(auditoriaRepositorio.findByEntidadAndEntidadIdOrderByCreadoEnDescIdDesc(
+                ServicioAuditoria.ENTIDAD_EMPLEADO, empleado.getId()))
+                .extracting(Auditoria::getAccion)
+                .containsExactly("FUNCIONARIO_REACTIVADO", "FUNCIONARIO_DADO_DE_BAJA", "FUNCIONARIO_REGISTRADO");
     }
 
     private Long idAdmin() {

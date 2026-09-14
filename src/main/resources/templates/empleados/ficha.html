@@ -105,6 +105,20 @@
             </a>
         </div>
 
+        <!-- Reactivar: deshace una baja hecha por error. -->
+        <div th:unless="${empleado.activo}" class="tarjeta flex flex-wrap items-center justify-between gap-3">
+            <p class="text-suave">
+                Mientras esté de baja no aparece al registrar solicitudes.
+                Si se dio de baja por error, podés reactivar su registro: el saldo y el historial siguen iguales.
+            </p>
+            <form th:action="@{/empleados/{id}/reactivar(id=${empleado.id})}" method="post">
+                <button type="submit" class="boton-secundario" data-un-solo-envio>
+                    <span aria-hidden="true">↺</span>
+                    Reactivar
+                </button>
+            </form>
+        </div>
+
         <section aria-labelledby="titulo-solicitudes" class="space-y-3">
             <h2 id="titulo-solicitudes" class="text-xl font-semibold">Solicitudes</h2>
 
