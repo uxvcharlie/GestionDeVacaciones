@@ -50,6 +50,21 @@ class ConversorTiempoTest {
         assertThat(ConversorTiempo.formatear(minutos, JORNADA)).isEqualTo(esperado);
     }
 
+    @ParameterizedTest(name = "{0} minutos en horas → \"{1}\"")
+    @CsvSource(delimiter = '|', value = {
+            "0    | 0 horas",
+            "45   | 45 minutos",
+            "60   | 1 hora",
+            "90   | 1 hora y 30 minutos",
+            "120  | 2 horas",
+            "480  | 8 horas",
+            "600  | 10 horas"
+    })
+    @DisplayName("Citas y permisos se muestran en horas y minutos, nunca en días")
+    void formatoEnHoras(int minutos, String esperado) {
+        assertThat(ConversorTiempo.formatearHoras(minutos)).isEqualTo(esperado);
+    }
+
     @Test
     @DisplayName("Medio día con jornada de 8 horas son 4 horas")
     void medioDia() {

@@ -103,6 +103,36 @@ public final class ConversorTiempo {
         return (minutos < 0 ? "−" : "") + unir(partes);
     }
 
+    /**
+     * Muestra un tiempo solo en horas y minutos, sin pasarlo a días.
+     *
+     * <p>Así se muestran las citas médicas y los permisos: una cita de 8 horas
+     * se lee "8 horas", no "1 día".</p>
+     *
+     * <ul>
+     *   <li>120 → "2 horas"</li>
+     *   <li>90 → "1 hora y 30 minutos"</li>
+     *   <li>45 → "45 minutos"</li>
+     * </ul>
+     */
+    public static String formatearHoras(int minutos) {
+        long total = Math.abs((long) minutos);
+        long horas = total / MINUTOS_POR_HORA;
+        long sueltos = total % MINUTOS_POR_HORA;
+
+        List<String> partes = new ArrayList<>();
+        if (horas > 0) {
+            partes.add(horas + (horas == 1 ? " hora" : " horas"));
+        }
+        if (sueltos > 0) {
+            partes.add(sueltos + (sueltos == 1 ? " minuto" : " minutos"));
+        }
+        if (partes.isEmpty()) {
+            return "0 horas";
+        }
+        return (minutos < 0 ? "−" : "") + unir(partes);
+    }
+
     /** "a" · "a y b" · "a, b y c" */
     private static String unir(List<String> partes) {
         if (partes.size() == 1) {
