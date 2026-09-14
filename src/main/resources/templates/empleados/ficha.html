@@ -33,8 +33,23 @@
             <section class="tarjeta md:col-span-1" aria-labelledby="titulo-saldo">
                 <h2 id="titulo-saldo" class="text-suave text-sm font-medium">Saldo disponible</h2>
                 <p class="mt-2 text-4xl sm:text-5xl font-bold leading-tight"
+                   th:classappend="${empleado.saldoVacacionesMinutos < 0} ? 'text-error'"
                    th:text="${@formatos.tiempo(empleado.saldoVacacionesMinutos, horasPorJornada)}">9 días</p>
                 <p class="ayuda" th:text="|Jornada de ${horasPorJornada} horas|">Jornada de 8 horas</p>
+
+                <!-- Desglose del año: cuánto se fue en cada tipo. -->
+                <div class="mt-4 pt-4 border-t border-elevada">
+                    <p class="text-suave text-sm" th:text="|Usado en ${desglose.anio()}|">Usado en 2026</p>
+                    <p th:if="${desglose.estaVacio()}" class="text-suave text-sm mt-1">
+                        Todavía no usó tiempo este año.
+                    </p>
+                    <ul th:unless="${desglose.estaVacio()}" class="text-sm mt-1 space-y-0.5">
+                        <li th:each="t : ${tipos}">
+                            <span class="text-suave" th:text="|${t.etiqueta}:|">Vacaciones:</span>
+                            <span th:text="${t.formatear(desglose.minutos(t), horasPorJornada)}">3 días</span>
+                        </li>
+                    </ul>
+                </div>
             </section>
 
             <section class="tarjeta md:col-span-2" aria-labelledby="titulo-datos">
@@ -71,8 +86,15 @@
             </section>
         </div>
 
-        <!-- Registrar solicitud y ajustar saldo se agregan acá en la Fase 3. -->
         <div th:if="${empleado.activo}" class="flex flex-wrap gap-3">
+            <a th:href="@{/solicitudes/nueva(funcionario=${empleado.id})}" class="boton-primario">
+                <span aria-hidden="true">＋</span>
+                Registrar solicitud
+            </a>
+            <a th:href="@{/empleados/{id}/ajuste(id=${empleado.id})}" class="boton-secundario">
+                <span aria-hidden="true">±</span>
+                Ajustar saldo
+            </a>
             <a th:href="@{/empleados/{id}/editar(id=${empleado.id})}" class="boton-secundario">
                 <span aria-hidden="true">✎</span>
                 Editar datos
@@ -82,6 +104,65 @@
                 Dar de baja
             </a>
         </div>
+
+        <section aria-labelledby="titulo-solicitudes" class="space-y-3">
+            <h2 id="titulo-solicitudes" class="text-xl font-semibold">Solicitudes</h2>
+
+            <p th:if="${#lists.isEmpty(solicitudes)}" class="tarjeta text-suave">
+                Todavía no tiene solicitudes registradas.
+            </p>
+
+            <ol th:unless="${#lists.isEmpty(solicitudes)}" class="space-y-3">
+                <li th:each="s : ${solicitudes}" class="tarjeta p-4">
+                    <div class="flex flex-wrap items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <p class="font-semibold" th:text="${s.tipo.etiqueta}">Vacaciones</p>
+                            <p class="text-suave text-sm"
+                               th:text="${s.deUnSoloDia} ? |el ${@formatos.fecha(s.fechaInicio)}| : |del ${@formatos.fecha(s.fechaInicio)} al ${@formatos.fecha(s.fechaFin)}|">
+                                del 10/11/2026 al 14/11/2026
+                            </p>
+                        </div>
+                        <span th:if="${s.registrada}" class="insignia insignia-registrada">
+                            <span aria-hidden="true">✓</span> Registrada
+                        </span>
+                        <span th:unless="${s.registrada}" class="insignia insignia-anulada">
+                            <span aria-hidden="true">✕</span> Anulada
+                        </span>
+                    </div>
+
+                    <p class="mt-2 text-lg font-semibold"
+                       th:classappend="${!s.registrada} ? 'line-through text-suave'"
+                       th:text="${s.tipo.formatear(s.minutosSolicitados, horasPorJornada)}">5 días</p>
+
+                    <p th:if="${s.motivo != null}" class="text-sm mt-1">
+                        <span class="text-suave">Motivo:</span>
+                        <span th:text="${s.motivo}">Motivo</span>
+                    </p>
+                    <p class="text-sm text-suave mt-1"
+                       th:text="|Registrada por ${nombresUsuarios[s.registradoPor] ?: 'un usuario que ya no existe'} el ${@formatos.fechaHora(s.creadoEn, zona)}|">
+                        Registrada por Brenda Vásquez
+                    </p>
+
+                    <div th:unless="${s.registrada}" class="mt-2 text-sm space-y-1">
+                        <p class="text-error"
+                           th:text="|Anulada por ${nombresUsuarios[s.anuladoPor] ?: 'un usuario que ya no existe'} el ${@formatos.fechaHora(s.anuladoEn, zona)}|">
+                            Anulada por Brenda Vásquez
+                        </p>
+                        <p>
+                            <span class="text-suave">Motivo de la anulación:</span>
+                            <span th:text="${s.motivoAnulacion}">Motivo</span>
+                        </p>
+                    </div>
+
+                    <div th:if="${s.registrada}" class="mt-3">
+                        <a th:href="@{/solicitudes/{id}/anular(id=${s.id})}" class="boton-peligro">
+                            <span aria-hidden="true">✕</span>
+                            Anular
+                        </a>
+                    </div>
+                </li>
+            </ol>
+        </section>
 
         <section aria-labelledby="titulo-historial" class="space-y-3">
             <h2 id="titulo-historial" class="text-xl font-semibold">Historial del saldo</h2>

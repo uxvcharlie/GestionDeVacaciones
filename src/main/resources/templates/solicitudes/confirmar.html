@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+  Segunda pantalla: el resumen antes de guardar.
+  Los datos viajan en campos ocultos y el servidor los vuelve a revisar TODOS
+  al guardar: lo que llega del navegador nunca se da por bueno.
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Confirmar solicitud', ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-2xl px-4 py-8 space-y-6">
+
+        <div>
+            <h1 class="text-2xl font-semibold">Revisá antes de guardar</h1>
+            <p class="text-suave mt-1">Paso 2 de 2. Todavía no se guardó nada.</p>
+        </div>
+
+        <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
+
+        <section class="tarjeta space-y-4" aria-labelledby="titulo-resumen">
+            <h2 id="titulo-resumen" class="sr-only">Resumen de la solicitud</h2>
+
+            <p class="text-xl sm:text-2xl font-semibold leading-snug">
+                <span th:text="${evaluacion.empleado().nombreCompleto}">María González</span>
+                <span class="text-suave">—</span>
+                <span th:text="${evaluacion.tipo().etiqueta}">Vacaciones</span>
+                <span class="text-suave">—</span>
+                <span th:if="${evaluacion.deUnSoloDia()}"
+                      th:text="|el ${@formatos.fecha(evaluacion.fechaInicio())}|">el 21/09/2026</span>
+                <span th:unless="${evaluacion.deUnSoloDia()}"
+                      th:text="|del ${@formatos.fecha(evaluacion.fechaInicio())} al ${@formatos.fecha(evaluacion.fechaFin())}|">del 10/11/2026 al 14/11/2026</span>
+                <span class="text-suave">—</span>
+                <span th:text="${evaluacion.tipo().formatear(evaluacion.minutos(), horasPorJornada)}">5 días</span>
+            </p>
+
+            <p class="text-suave text-sm" th:unless="${evaluacion.deUnSoloDia()}"
+               th:text="|Ese rango abarca ${evaluacion.diasCorridos()} días corridos, contando sábados y domingos.|">
+                Ese rango abarca 5 días corridos.
+            </p>
+
+            <p class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-lg">
+                <span class="text-suave">Saldo:</span>
+                <span th:text="${@formatos.tiempo(evaluacion.saldoAntes(), horasPorJornada)}">12 días</span>
+                <span aria-hidden="true" class="text-acento">→</span>
+                <span class="sr-only">queda en</span>
+                <span class="font-bold" th:classappend="${evaluacion.saldoDespues() < 0} ? 'text-error'"
+                      th:text="${@formatos.tiempo(evaluacion.saldoDespues(), horasPorJornada)}">7 días</span>
+            </p>
+
+            <p th:unless="${#strings.isEmpty(formulario.motivo)}" class="text-sm">
+                <span class="text-suave">Motivo:</span>
+                <span th:text="${formulario.motivo}">Motivo</span>
+            </p>
+        </section>
+
+        <p th:if="${evaluacion.tipo().name() == 'CITA_MEDICA' and !#strings.isEmpty(formulario.motivo)}"
+           class="alerta-aviso">
+            <span aria-hidden="true" class="text-xl leading-none">ℹ</span>
+            <span>Recordá que en una cita médica no se escribe ningún dato de salud. Si el motivo tiene alguno, tocá «Corregir datos».</span>
+        </p>
+
+        <div th:unless="${#lists.isEmpty(evaluacion.advertencias())}" class="alerta-aviso" role="status">
+            <span aria-hidden="true" class="text-xl leading-none">⚠</span>
+            <div>
+                <p class="font-semibold">Revisá esto antes de guardar. No impide guardar.</p>
+                <ul class="list-disc list-inside mt-1 space-y-1">
+                    <li th:each="advertencia : ${evaluacion.advertencias()}" th:text="${advertencia}">Advertencia</li>
+                </ul>
+            </div>
+        </div>
+
+        <form th:action="@{/solicitudes}" method="post" th:object="${formulario}" class="space-y-6">
+
+            <input type="hidden" th:field="*{empleadoId}">
+            <input type="hidden" th:field="*{tipo}">
+            <input type="hidden" th:field="*{fechaInicio}">
+            <input type="hidden" th:field="*{fechaFin}">
+            <input type="hidden" th:field="*{dias}">
+            <input type="hidden" th:field="*{horasSueltas}">
+            <input type="hidden" th:field="*{horas}">
+            <input type="hidden" th:field="*{minutos}">
+            <input type="hidden" th:field="*{motivo}">
+
+            <!-- Saldo insuficiente: solo se guarda con autorización expresa y motivo. -->
+            <section th:if="${evaluacion.requiereAutorizacion()}" class="tarjeta space-y-4"
+                     aria-labelledby="titulo-saldo-insuficiente">
+                <div class="alerta-error" role="alert">
+                    <span aria-hidden="true" class="text-xl leading-none">⚠</span>
+                    <p id="titulo-saldo-insuficiente" th:text="${evaluacion.mensajeSaldoInsuficiente()}">
+                        Brenda, María González solo tiene 3 días de saldo y estás registrando 5 días.
+                    </p>
+                </div>
+                <p class="text-suave">
+                    Así no se puede guardar. Si esta excepción está autorizada, marcala y escribí el motivo:
+                    queda registrada en la bitácora con tu nombre, la fecha y la hora.
+                </p>
+                <label class="flex items-start gap-3 min-h-11 cursor-pointer">
+                    <input type="checkbox" th:field="*{autorizarSaldoNegativo}" class="size-5 mt-0.5 accent-primario">
+                    <span>Autorizo registrar esta solicitud aunque el saldo quede en negativo.</span>
+                </label>
+                <div>
+                    <label class="etiqueta" for="motivoAutorizacion">Motivo de la autorización</label>
+                    <textarea class="campo min-h-20" th:field="*{motivoAutorizacion}" maxlength="250" rows="2"
+                              th:classappend="${#fields.hasErrors('motivoAutorizacion')} ? 'campo-error'"></textarea>
+                    <p class="ayuda text-error" role="alert"
+                       th:if="${#fields.hasErrors('motivoAutorizacion')}" th:errors="*{motivoAutorizacion}">Error</p>
+                </div>
+            </section>
+
+            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button type="submit" th:formaction="@{/solicitudes/corregir}" formnovalidate class="boton-secundario">
+                    <span aria-hidden="true">✎</span>
+                    Corregir datos
+                </button>
+                <button type="submit" class="boton-primario" data-un-solo-envio>
+                    <span aria-hidden="true">✓</span>
+                    Guardar solicitud
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+</main>
+
+</body>
+</html>
