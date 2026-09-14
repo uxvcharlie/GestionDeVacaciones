@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<!--
+  Un solo formulario para agregar y para editar.
+  Al agregar no hay empleado; al editar, ${empleado} es el que se está editando.
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina(${empleado == null} ? 'Agregar empleado' : 'Editar empleado', ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-lg px-4 py-8 space-y-6">
+
+        <p>
+            <a th:if="${empleado == null}" th:href="@{/empleados}" class="enlace">← Volver a empleados</a>
+            <a th:unless="${empleado == null}" th:href="@{/empleados/{id}(id=${empleado.id})}"
+               class="enlace">← Volver a la ficha</a>
+        </p>
+
+        <h1 class="text-2xl font-semibold">
+            <span th:if="${empleado == null}">Agregar empleado</span>
+            <span th:unless="${empleado == null}"
+                  th:text="|Editar datos de ${empleado.nombreCompleto}|">Editar datos</span>
+        </h1>
+
+        <div class="tarjeta">
+
+            <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
+
+            <form th:action="${empleado == null} ? @{/empleados} : @{/empleados/{id}(id=${empleado.id})}"
+                  method="post" th:object="${formulario}" class="space-y-5">
+
+                <div>
+                    <label class="etiqueta" for="nombreCompleto">Nombre completo</label>
+                    <input class="campo" type="text" th:field="*{nombreCompleto}"
+                           th:classappend="${#fields.hasErrors('nombreCompleto')} ? 'campo-error'"
+                           th:attr="aria-invalid=${#fields.hasErrors('nombreCompleto')}"
+                           maxlength="150" required autocomplete="off">
+                    <p class="ayuda text-error" role="alert"
+                       th:if="${#fields.hasErrors('nombreCompleto')}" th:errors="*{nombreCompleto}">Error</p>
+                </div>
+
+                <div>
+                    <label class="etiqueta" for="cargo">Cargo <span class="text-suave font-normal">(opcional)</span></label>
+                    <input class="campo" type="text" th:field="*{cargo}"
+                           th:classappend="${#fields.hasErrors('cargo')} ? 'campo-error'"
+                           th:attr="aria-invalid=${#fields.hasErrors('cargo')}"
+                           maxlength="100" autocomplete="off">
+                    <p class="ayuda text-error" role="alert"
+                       th:if="${#fields.hasErrors('cargo')}" th:errors="*{cargo}">Error</p>
+                </div>
+
+                <div>
+                    <label class="etiqueta" for="areaODependencia">Área o dependencia <span class="text-suave font-normal">(opcional)</span></label>
+                    <input class="campo" type="text" th:field="*{areaODependencia}"
+                           th:classappend="${#fields.hasErrors('areaODependencia')} ? 'campo-error'"
+                           th:attr="aria-invalid=${#fields.hasErrors('areaODependencia')}"
+                           maxlength="100" autocomplete="off">
+                    <p class="ayuda text-error" role="alert"
+                       th:if="${#fields.hasErrors('areaODependencia')}" th:errors="*{areaODependencia}">Error</p>
+                </div>
+
+                <div>
+                    <label class="etiqueta" for="fechaIngreso">Fecha de ingreso <span class="text-suave font-normal">(opcional)</span></label>
+                    <input class="campo" type="date" th:field="*{fechaIngreso}"
+                           th:classappend="${#fields.hasErrors('fechaIngreso')} ? 'campo-error'"
+                           th:attr="aria-invalid=${#fields.hasErrors('fechaIngreso')}">
+                    <p class="ayuda text-error" role="alert"
+                       th:if="${#fields.hasErrors('fechaIngreso')}" th:errors="*{fechaIngreso}">Error</p>
+                </div>
+
+                <!-- El saldo solo se escribe al agregar. Después, solo cambia con solicitudes o ajustes. -->
+                <fieldset th:if="${empleado == null}" class="space-y-4 border-t border-elevada pt-5">
+                    <legend class="font-semibold">Saldo con el que empieza</legend>
+                    <p class="ayuda" id="ayuda-saldo"
+                       th:text="|Escribí el saldo que tiene hoy. Una jornada completa son ${horasPorJornada} horas.|">
+                        Escribí el saldo que tiene hoy.
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="etiqueta" for="saldoDias">Días</label>
+                            <input class="campo" type="number" th:field="*{saldoDias}"
+                                   th:classappend="${#fields.hasErrors('saldoDias')} ? 'campo-error'"
+                                   th:attr="aria-invalid=${#fields.hasErrors('saldoDias')}"
+                                   min="0" max="3650" step="1" inputmode="numeric" required
+                                   aria-describedby="ayuda-saldo">
+                            <p class="ayuda text-error" role="alert"
+                               th:if="${#fields.hasErrors('saldoDias')}" th:errors="*{saldoDias}">Error</p>
+                        </div>
+                        <div>
+                            <label class="etiqueta" for="saldoHoras">Horas</label>
+                            <input class="campo" type="number" th:field="*{saldoHoras}"
+                                   th:classappend="${#fields.hasErrors('saldoHoras')} ? 'campo-error'"
+                                   th:attr="aria-invalid=${#fields.hasErrors('saldoHoras')}"
+                                   min="0" max="23" step="1" inputmode="numeric" required
+                                   aria-describedby="ayuda-saldo">
+                            <p class="ayuda text-error" role="alert"
+                               th:if="${#fields.hasErrors('saldoHoras')}" th:errors="*{saldoHoras}">Error</p>
+                        </div>
+                    </div>
+
+                    <p class="ayuda">
+                        Después de hoy, el saldo solo cambia al registrar una solicitud o con un ajuste manual.
+                    </p>
+                </fieldset>
+
+                <div class="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
+                    <a th:href="${empleado == null} ? @{/empleados} : @{/empleados/{id}(id=${empleado.id})}"
+                       class="boton-secundario">Cancelar</a>
+                    <button type="submit" class="boton-primario"
+                            th:text="${empleado == null} ? 'Guardar empleado' : 'Guardar cambios'">Guardar</button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

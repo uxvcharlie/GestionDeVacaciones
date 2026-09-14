@@ -56,7 +56,8 @@
     /* --- Botones -------------------------------------------------------- */
     .boton,
     .boton-primario,
-    .boton-secundario {
+    .boton-secundario,
+    .boton-peligro {
         @apply inline-flex items-center justify-center gap-2
                min-h-11 min-w-11 px-5 py-2.5
                rounded-lg font-semibold text-base
@@ -125,5 +126,38 @@
                focus:absolute focus:top-3 focus:left-3 focus:z-50
                focus:px-4 focus:py-2 focus:rounded-lg
                focus:bg-primario focus:text-white;
+    }
+}
+
+/* ===========================================================================
+   Componentes agregados en la Fase 2 (empleados)
+   =========================================================================== */
+@layer components {
+
+    /* Acciones destructivas (dar de baja): borde y texto en rojo desaturado. */
+    .boton-peligro {
+        @apply bg-transparent text-error border border-error/50 hover:bg-error/10;
+    }
+
+    /* Insignia de estado. Siempre icono + texto: nunca solo color. */
+    .insignia {
+        @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1
+               text-xs font-semibold whitespace-nowrap;
+    }
+
+    .insignia-baja {
+        @apply border-alerta/40 bg-alerta/10 text-alerta;
+    }
+
+    /* Enlaces del menú principal. */
+    .enlace-nav {
+        @apply inline-flex items-center min-h-11 px-3 rounded-lg text-texto
+               hover:bg-elevada
+               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento;
+    }
+
+    /* La sección actual se marca con aria-current="page", no solo con color. */
+    .enlace-nav[aria-current="page"] {
+        @apply bg-elevada font-semibold;
     }
 }

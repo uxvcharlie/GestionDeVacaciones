@@ -1,5 +1,6 @@
 package ni.gestionvacaciones.web;
 
+import jakarta.servlet.http.HttpServletRequest;
 import ni.gestionvacaciones.seguridad.ServicioUsuario;
 import ni.gestionvacaciones.seguridad.Usuario;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,5 +30,15 @@ public class ModeloGlobal {
             return null; // pantalla de ingreso: todavía no hay nadie
         }
         return servicioUsuario.buscarPorUsername(principal.getName()).orElse(null);
+    }
+
+    /**
+     * Qué sección del menú está activa, para marcarla con aria-current="page".
+     * Así un lector de pantalla anuncia "Empleados, página actual".
+     */
+    @ModelAttribute("seccion")
+    public String seccion(HttpServletRequest peticion) {
+        String ruta = peticion.getRequestURI().substring(peticion.getContextPath().length());
+        return ruta.startsWith("/empleados") ? "empleados" : "inicio";
     }
 }

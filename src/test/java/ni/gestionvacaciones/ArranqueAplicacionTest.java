@@ -5,42 +5,17 @@ import ni.gestionvacaciones.seguridad.UsuarioRepositorio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.testcontainers.postgresql.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Prueba de humo de la Fase 1.
- *
- * <p>Levanta un PostgreSQL de verdad (descartable) con Testcontainers, aplica
- * las migraciones de Flyway y arranca la aplicación completa. Si el esquema y
- * las entidades no coincidieran, {@code ddl-auto: validate} haría fallar esta
- * prueba: es exactamente para eso.</p>
+ * Prueba de humo: la aplicación arranca, Flyway crea el esquema y se crea el
+ * administrador inicial. Si una entidad dejara de coincidir con su tabla,
+ * {@code ddl-auto: validate} haría fallar el arranque y esta prueba.
  */
-@SpringBootTest(properties = {
-        // El administrador inicial se crea desde variables de configuración,
-        // igual que en producción. Estas son de mentira y solo viven acá.
-        "app.admin-inicial.username=brenda",
-        "app.admin-inicial.password=frase-larga-de-prueba",
-        "app.admin-inicial.nombre=Brenda Vásquez"
-})
-@Testcontainers
-class ArranqueAplicacionTest {
-
-    /**
-     * Misma versión de PostgreSQL que usamos en desarrollo y en producción.
-     * {@code @ServiceConnection} se encarga de apuntar la aplicación a este
-     * contenedor: no hay que configurar la URL a mano.
-     */
-    @Container
-    @ServiceConnection
-    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:17-alpine");
+class ArranqueAplicacionTest extends PruebaConPostgres {
 
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;

@@ -39,11 +39,17 @@ registro laboral se transforma en un reclamo.
 
 | Herramienta | Para qué           | Cómo instalarla en Fedora                     |
 |-------------|--------------------|-----------------------------------------------|
-| Java 21+    | Compilar y correr  | `sudo dnf install java-21-openjdk-devel`      |
+| JDK 21+     | Compilar y correr  | `sudo dnf install java-25-openjdk-devel`      |
 | Podman      | PostgreSQL local   | `sudo dnf install podman`                     |
 | Node.js     | Regenerar el CSS   | `sudo dnf install nodejs npm`                 |
 
 Maven **no** hace falta instalarlo: el proyecto trae su propio `./mvnw`.
+
+**Ojo con el JDK en Fedora.** El paquete `java-25-openjdk-headless` es solo
+para *ejecutar* Java: no trae el compilador (`javac`). Si `./mvnw` falla con
+`release version 21 not supported`, te falta el `-devel`. Fedora 44 ya no
+publica Java 21, y no hace falta: el proyecto genera código compatible con
+Java 21 aunque compiles con el JDK 25.
 
 Node solo se necesita si vas a **modificar** la interfaz. La hoja de estilos ya
 generada está versionada, así que la aplicación arranca y se ve bien sin Node.
@@ -63,6 +69,15 @@ podman run -d \
   -p 5432:5432 \
   -v vacaciones-datos:/var/lib/postgresql/data \
   docker.io/library/postgres:17-alpine
+```
+
+**Si ya tenés PostgreSQL instalado en el sistema** (el servicio `postgresql`),
+el puerto 5432 está ocupado y el contenedor no arranca. Usá otro puerto del
+lado de tu computadora, `-p 5433:5432`, y en `.env` poné
+`DB_URL=jdbc:postgresql://localhost:5433/vacaciones`. Para saber si es tu caso:
+
+```bash
+ss -ltn | grep 5432
 ```
 
 Comprobá que quedó arriba:
@@ -88,6 +103,9 @@ cp .env.example .env
 Abrilo y poné tus valores. `DB_PASSWORD` tiene que ser la misma clave que
 usaste en el comando de Podman, y `ADMIN_PASSWORD_INICIAL` tiene que tener al
 menos 12 caracteres.
+
+Los valores con espacios van **entre comillas**: `ADMIN_NOMBRE="Brenda Vásquez"`.
+Sin comillas, el script lee solo "Brenda" y la variable queda vacía.
 
 `.env` está en `.gitignore`: nunca se sube a GitHub.
 
@@ -168,7 +186,12 @@ sirve al navegador y **sí se versiona**.
 npm install          # una sola vez
 npm run css          # regenera el archivo, minificado
 npm run css:vigilar  # lo regenera solo, cada vez que guardás
+npm run htmx         # copia HTMX desde node_modules a static/js
 ```
+
+HTMX (lo que hace que el buscador filtre mientras escribís) también se sirve
+desde la propia aplicación, sin CDN. Su versión exacta queda fijada en
+`package.json`.
 
 Si cambiás clases en un archivo `.html`, acordate de regenerar el CSS antes de
 hacer commit.
@@ -198,7 +221,11 @@ sobrescribir la contraseña que la persona ya eligió.
 
 ```
 src/main/java/ni/gestionvacaciones/
+├── comun/        conversor de minutos a días y formatos de fecha
 ├── config/       configuración de seguridad, MVC y administrador inicial
+├── empleado/     alta, búsqueda, ficha, edición y baja de empleados
+├── parametro/    lectura de parámetros (horas por jornada, zona horaria)
+├── saldo/        libro contable del saldo: el único que lo modifica
 ├── seguridad/    usuarios, contraseñas, ingreso
 └── web/          controladores y pantallas comunes
 
@@ -234,7 +261,8 @@ src/main/tailwind/  archivo fuente de los estilos
 
 - [x] **Fase 1** — Esqueleto: base de datos, Flyway, ingreso seguro, cambio
       obligatorio de contraseña.
-- [ ] **Fase 2** — Empleados.
+- [x] **Fase 2** — Empleados: alta con saldo inicial, buscador sin tildes,
+      ficha con historial, edición y baja lógica.
 - [ ] **Fase 3** — Solicitudes y saldos.
 - [ ] **Fase 4** — Interfaz y experiencia de uso.
 - [ ] **Fase 5** — Administración y seguridad.
