@@ -221,6 +221,7 @@ sobrescribir la contraseña que la persona ya eligió.
 
 ```
 src/main/java/ni/gestionvacaciones/
+├── admin/        panel de usuarios, pantalla de bitácora y de parámetros
 ├── auditoria/    bitácora: quién hizo qué, cuándo y desde dónde
 ├── comun/        conversor de minutos a días y formatos de fecha
 ├── config/       configuración de seguridad, MVC y administrador inicial
@@ -271,5 +272,7 @@ src/main/tailwind/  archivo fuente de los estilos
 - [x] **Fase 4** — Interfaz y experiencia de uso: tablero con saludo según la
       hora, buscador, resumen del mes, últimas solicitudes, aviso antes de que
       venza la sesión, errores amables y reactivación de funcionarios.
-- [ ] **Fase 5** — Administración y seguridad.
+- [x] **Fase 5** — Administración y seguridad: panel de usuarios, bitácora,
+      parámetros y bloqueo por intentos fallidos. Ver
+      [el repaso de seguridad](docs/seguridad.md).
 - [ ] **Fase 6** — Despliegue, respaldos y manual.
