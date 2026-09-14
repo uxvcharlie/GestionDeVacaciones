@@ -13,7 +13,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="dark">
     <title th:text="${titulo} + ' · Registro de Vacaciones'">Registro de Vacaciones</title>
+
+    <!--
+      Configuración de HTMX compatible con nuestra política de seguridad (CSP):
+      - includeIndicatorStyles: false → HTMX no incrusta estilos en la página.
+      - allowEval: false → HTMX nunca ejecuta código armado a partir de texto.
+    -->
+    <meta name="htmx-config" content='{"includeIndicatorStyles":false,"allowEval":false}'>
+
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
+
+    <!-- Todo se sirve desde la propia aplicación: nada de CDN. -->
+    <script th:src="@{/js/htmx.min.js}" defer></script>
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body class="min-h-screen bg-fondo text-texto">
 

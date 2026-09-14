@@ -5,10 +5,12 @@
   "description": "Herramienta de construcción de la hoja de estilos. No forma parte de la aplicación Java.",
   "scripts": {
     "css": "tailwindcss -i ./src/main/tailwind/entrada.css -o ./src/main/resources/static/css/estilos.css --minify",
-    "css:vigilar": "tailwindcss -i ./src/main/tailwind/entrada.css -o ./src/main/resources/static/css/estilos.css --watch"
+    "css:vigilar": "tailwindcss -i ./src/main/tailwind/entrada.css -o ./src/main/resources/static/css/estilos.css --watch",
+    "htmx": "cp node_modules/htmx.org/dist/htmx.min.js src/main/resources/static/js/htmx.min.js"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.3",
+    "htmx.org": "2.0.10",
     "tailwindcss": "^4.3.3"
   }
 }
