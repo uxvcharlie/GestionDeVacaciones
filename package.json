@@ -1,0 +1,14 @@
+{
+  "name": "gestion-vacaciones-interfaz",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Herramienta de construcción de la hoja de estilos. No forma parte de la aplicación Java.",
+  "scripts": {
+    "css": "tailwindcss -i ./src/main/tailwind/entrada.css -o ./src/main/resources/static/css/estilos.css --minify",
+    "css:vigilar": "tailwindcss -i ./src/main/tailwind/entrada.css -o ./src/main/resources/static/css/estilos.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

@@ -1,0 +1,129 @@
+/* ===========================================================================
+   Archivo FUENTE de Tailwind. Este archivo NO lo lee la aplicación.
+   De acá se genera src/main/resources/static/css/estilos.css, que es el que
+   realmente se sirve al navegador.
+
+   Para regenerarlo:   npm run css
+   Para trabajar:      npm run css:vigilar   (regenera solo al guardar)
+   =========================================================================== */
+
+@import "tailwindcss";
+
+/* Dónde buscar las clases que usamos, para no generar CSS de más. */
+@source "../resources/templates";
+@source "../resources/static/js";
+
+/* ===========================================================================
+   Paleta. Cada color acá se convierte en clases de Tailwind:
+   --color-fondo  →  bg-fondo, text-fondo, border-fondo, ring-fondo...
+   =========================================================================== */
+@theme {
+    /* --- Paleta obligatoria del proyecto --- */
+    --color-fondo:       #05060E;  /* fondo base de la aplicación           */
+    --color-superficie:  #12163A;  /* tarjetas, barra lateral, encabezados  */
+    --color-elevada:     #2E1A63;  /* bordes, separadores, filas alternas   */
+    --color-primario:    #5B2A86;  /* botones primarios y estados activos   */
+    --color-acento:      #B14AED;  /* anillo de foco, iconos, barras, badges*/
+
+    /* --- Texto --- */
+    --color-texto:       #F5F5F7;  /* 18.6:1 sobre el fondo                 */
+    --color-suave:       #A9AEC4;  /*  9.2:1 sobre el fondo                 */
+
+    /* Variante clara del acento, SOLO para texto sobre tarjetas.
+       El acento puro (#B14AED) da 4.2:1 sobre #12163A y 3.5:1 sobre #2E1A63,
+       y eso no alcanza para texto normal según WCAG AA (pide 4.5:1).
+       Este tono mantiene el mismo matiz (278°) y sube a 6.6 / 5.7 / 4.7:1. */
+    --color-acento-texto: #C16FF1;
+
+    /* --- Estados: verdes, ámbar y rojos desaturados que armonizan --- */
+    --color-exito:  #6FD3A0;   /* 11.1:1 sobre el fondo */
+    --color-alerta: #E8B657;   /* 10.8:1 sobre el fondo */
+    --color-error:  #F08A84;   /*  8.4:1 sobre el fondo */
+}
+
+/* ===========================================================================
+   Componentes reutilizables.
+   Sirven para no repetir quince clases sueltas en cada plantilla y, sobre
+   todo, para que el anillo de foco y la altura mínima de 44 px estén siempre,
+   sin depender de que uno se acuerde de ponerlos.
+
+   Nota técnica: en Tailwind v4 no se puede hacer @apply de una clase propia
+   (solo de utilidades de Tailwind). Por eso lo común se define una sola vez
+   con una lista de selectores, en vez de "heredarlo" con @apply.
+   =========================================================================== */
+@layer components {
+
+    /* --- Botones -------------------------------------------------------- */
+    .boton,
+    .boton-primario,
+    .boton-secundario {
+        @apply inline-flex items-center justify-center gap-2
+               min-h-11 min-w-11 px-5 py-2.5
+               rounded-lg font-semibold text-base
+               transition-colors cursor-pointer
+               focus-visible:outline-none focus-visible:ring-2
+               focus-visible:ring-acento focus-visible:ring-offset-2
+               focus-visible:ring-offset-fondo;
+    }
+
+    /* Fondo #5B2A86 con texto blanco: contraste 9.9:1. */
+    .boton-primario {
+        @apply bg-primario text-white hover:bg-[#6d3ba0] active:bg-[#4a2270];
+    }
+
+    .boton-secundario {
+        @apply bg-transparent text-texto border border-elevada hover:bg-elevada;
+    }
+
+    /* --- Campos de formulario ------------------------------------------- */
+    .campo {
+        @apply block w-full min-h-11 px-4 py-2.5
+               rounded-lg bg-fondo text-texto placeholder:text-suave
+               border border-elevada
+               focus:outline-none focus:ring-2 focus:ring-acento focus:border-acento;
+    }
+
+    .campo-error {
+        @apply border-error focus:ring-error focus:border-error;
+    }
+
+    .etiqueta {
+        @apply block mb-2 font-medium text-texto;
+    }
+
+    .ayuda {
+        @apply mt-2 text-sm text-suave;
+    }
+
+    /* --- Tarjetas ------------------------------------------------------- */
+    .tarjeta {
+        @apply bg-superficie border border-elevada rounded-xl p-6;
+    }
+
+    /* --- Avisos: color + icono + texto, nunca solo color ----------------- */
+    .alerta,
+    .alerta-error,
+    .alerta-exito,
+    .alerta-aviso {
+        @apply flex items-start gap-3 p-4 rounded-lg border text-base;
+    }
+
+    .alerta-error { @apply border-error/40  bg-error/10  text-error;  }
+    .alerta-exito { @apply border-exito/40  bg-exito/10  text-exito;  }
+    .alerta-aviso { @apply border-alerta/40 bg-alerta/10 text-alerta; }
+
+    /* --- Enlaces -------------------------------------------------------- */
+    .enlace {
+        @apply text-acento-texto underline underline-offset-4
+               hover:text-acento rounded-sm
+               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento;
+    }
+
+    /* --- Enlace "saltar al contenido" (accesibilidad con teclado) -------- */
+    .saltar-contenido {
+        @apply sr-only focus:not-sr-only
+               focus:absolute focus:top-3 focus:left-3 focus:z-50
+               focus:px-4 focus:py-2 focus:rounded-lg
+               focus:bg-primario focus:text-white;
+    }
+}
