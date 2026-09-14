@@ -16,6 +16,8 @@ public interface EmpleadoRepositorio extends JpaRepository<Empleado, Long> {
 
     List<Empleado> findAllByOrderByNombreCompletoAsc();
 
+    long countByActivoTrue();
+
     /**
      * Lee el empleado y BLOQUEA su fila hasta que termine la transacción
      * ({@code SELECT ... FOR UPDATE}).
