@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Usuarios', ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-5xl px-4 py-8 space-y-6">
+
+        <div th:replace="~{fragmentos/admin :: pestanas('usuarios')}"></div>
+
+        <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="text-xl font-semibold">Usuarios</h2>
+            <a th:href="@{/admin/usuarios/nuevo}" class="boton-primario">
+                <span aria-hidden="true">＋</span>
+                Crear usuario
+            </a>
+        </div>
+        <p class="ayuda">
+            No hay registro público: los usuarios se crean solo desde acá. Cada persona recibe
+            una contraseña temporal y está obligada a cambiarla la primera vez que entra.
+        </p>
+
+        <ul class="grid gap-3 sm:grid-cols-2">
+            <li th:each="u : ${usuarios}" class="tarjeta p-4 space-y-3">
+                <div class="flex flex-wrap items-start justify-between gap-2">
+                    <div class="min-w-0">
+                        <p class="font-semibold break-words" th:text="${u.nombreCompleto}">Brenda Vásquez</p>
+                        <p class="text-suave text-sm" th:text="|Usuario: ${u.username}|">Usuario: brenda</p>
+                    </div>
+                    <span th:if="${!u.activo}" class="insignia insignia-anulada">
+                        <span aria-hidden="true">⛔</span> Bloqueado
+                    </span>
+                    <span th:if="${u.activo and u.estaBloqueado()}" class="insignia insignia-baja">
+                        <span aria-hidden="true">⏸</span> Bloqueado por intentos
+                    </span>
+                    <span th:if="${u.activo and !u.estaBloqueado()}" class="insignia insignia-registrada">
+                        <span aria-hidden="true">✓</span> Activo
+                    </span>
+                </div>
+
+                <p th:if="${u.activo and u.estaBloqueado()}" class="text-sm text-alerta"
+                   th:text="|Hasta el ${@formatos.fechaHora(u.bloqueadoHasta, zona)}, por intentos fallidos.|">
+                    Hasta las 3:45 pm, por intentos fallidos.
+                </p>
+                <p th:if="${u.debeCambiarPassword}" class="text-sm text-suave">
+                    <span aria-hidden="true">🔑</span> Todavía no cambió la contraseña temporal.
+                </p>
+                <p class="text-sm text-suave"
+                   th:text="${u.ultimoLogin != null} ? |Último ingreso: ${@formatos.fechaHora(u.ultimoLogin, zona)}| : 'Todavía no ingresó.'">
+                    Último ingreso: 14/09/2026 9:10 am
+                </p>
+
+                <p th:if="${u.id == usuarioActual.id}" class="text-sm text-acento-texto">Este es tu usuario.</p>
+
+                <div th:unless="${u.id == usuarioActual.id}" class="flex flex-wrap gap-2">
+                    <a th:if="${u.activo}" th:href="@{/admin/usuarios/{id}/bloquear(id=${u.id})}" class="boton-peligro">
+                        <span aria-hidden="true">⛔</span> Bloquear
+                    </a>
+                    <form th:if="${!u.activo or u.estaBloqueado()}"
+                          th:action="@{/admin/usuarios/{id}/desbloquear(id=${u.id})}" method="post">
+                        <button type="submit" class="boton-secundario" data-un-solo-envio>
+                            <span aria-hidden="true">↺</span> Desbloquear
+                        </button>
+                    </form>
+                    <a th:href="@{/admin/usuarios/{id}/restablecer(id=${u.id})}" class="boton-secundario">
+                        <span aria-hidden="true">🔑</span> Restablecer contraseña
+                    </a>
+                </div>
+            </li>
+        </ul>
+
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- Confirmación con el nombre explícito para bloquear o restablecer la contraseña. -->
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina(${accion == 'bloquear'} ? 'Bloquear usuario' : 'Restablecer contraseña', ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-lg px-4 py-10">
+        <div class="tarjeta text-center space-y-4">
+
+            <span class="text-alerta text-5xl block" aria-hidden="true">⚠</span>
+
+            <h1 class="text-2xl font-semibold"
+                th:text="${accion == 'bloquear'} ? |¿Bloquear el usuario de ${usuario.nombreCompleto}?| : |¿Restablecer la contraseña de ${usuario.nombreCompleto}?|">
+                ¿Bloquear el usuario?
+            </h1>
+
+            <p class="text-suave" th:if="${accion == 'bloquear'}">
+                No va a poder entrar hasta que lo desbloquees. Si tiene la sesión abierta, se le
+                cierra en su próximo clic. Nada de lo que registró se borra.
+            </p>
+            <p class="text-suave" th:unless="${accion == 'bloquear'}">
+                Su contraseña actual deja de funcionar en este momento. Se genera una temporal,
+                que vas a ver una sola vez, y al entrar va a tener que cambiarla.
+            </p>
+
+            <form th:action="${accion == 'bloquear'} ? @{/admin/usuarios/{id}/bloquear(id=${usuario.id})} : @{/admin/usuarios/{id}/restablecer(id=${usuario.id})}"
+                  method="post" class="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-center">
+                <a th:href="@{/admin/usuarios}" class="boton-secundario">No, volver</a>
+                <button th:if="${accion == 'bloquear'}" type="submit" class="boton-peligro" data-un-solo-envio>Sí, bloquear</button>
+                <button th:unless="${accion == 'bloquear'}" type="submit" class="boton-primario" data-un-solo-envio>Sí, restablecer</button>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>

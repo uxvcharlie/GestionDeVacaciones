@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Crear usuario', ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-lg px-4 py-8 space-y-6">
+
+        <p><a th:href="@{/admin/usuarios}" class="enlace">← Volver a usuarios</a></p>
+
+        <div>
+            <h1 class="text-2xl font-semibold">Crear usuario</h1>
+            <p class="text-suave mt-1">
+                Vos elegís el nombre de usuario. La contraseña la genera el sistema, y la
+                vas a ver una sola vez para entregarla.
+            </p>
+        </div>
+
+        <div class="tarjeta">
+
+            <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
+
+            <form th:action="@{/admin/usuarios}" method="post" th:object="${formulario}" class="space-y-5 mt-2">
+
+                <div>
+                    <label class="etiqueta" for="nombreCompleto">Nombre completo</label>
+                    <input class="campo" type="text" th:field="*{nombreCompleto}" maxlength="150" required autocomplete="off"
+                           th:classappend="${#fields.hasErrors('nombreCompleto')} ? 'campo-error'">
+                    <p class="ayuda text-error" role="alert"
+                       th:if="${#fields.hasErrors('nombreCompleto')}" th:errors="*{nombreCompleto}">Error</p>
+                </div>
+
+                <div>
+                    <label class="etiqueta" for="username">Nombre de usuario</label>
+                    <input class="campo" type="text" th:field="*{username}" maxlength="50" required
+                           autocomplete="off" spellcheck="false" autocapitalize="none" aria-describedby="ayuda-username"
+                           th:classappend="${#fields.hasErrors('username')} ? 'campo-error'">
+                    <p id="ayuda-username" class="ayuda">
+                        Con esto va a entrar. Por ejemplo: <span class="font-mono">maria.gonzalez</span>. Sin espacios ni tildes.
+                    </p>
+                    <p class="ayuda text-error" role="alert"
+                       th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error</p>
+                </div>
+
+                <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <a th:href="@{/admin/usuarios}" class="boton-secundario">Cancelar</a>
+                    <button type="submit" class="boton-primario" data-un-solo-envio>Crear y generar contraseña</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>
