@@ -1,6 +1,6 @@
 package ni.gestionvacaciones.config;
 
-import ni.gestionvacaciones.web.InterceptorCambioPassword;
+import ni.gestionvacaciones.web.InterceptorEstadoUsuario;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -8,22 +8,21 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * Configuración de Spring MVC.
  *
- * <p>Por ahora solo registra el interceptor que obliga a cambiar la contraseña.
- * En fases siguientes acá se agregan los formatos de fecha dd/MM/yyyy y la zona
- * horaria de Managua.</p>
+ * <p>Registra el interceptor que, en cada pantalla, cierra la sesión de un
+ * usuario bloqueado y obliga a cambiar la contraseña temporal.</p>
  */
 @Configuration
 public class ConfiguracionWeb implements WebMvcConfigurer {
 
-    private final InterceptorCambioPassword interceptorCambioPassword;
+    private final InterceptorEstadoUsuario interceptorEstadoUsuario;
 
-    public ConfiguracionWeb(InterceptorCambioPassword interceptorCambioPassword) {
-        this.interceptorCambioPassword = interceptorCambioPassword;
+    public ConfiguracionWeb(InterceptorEstadoUsuario interceptorEstadoUsuario) {
+        this.interceptorEstadoUsuario = interceptorEstadoUsuario;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registro) {
-        registro.addInterceptor(interceptorCambioPassword)
+        registro.addInterceptor(interceptorEstadoUsuario)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/css/**", "/js/**", "/favicon.ico", "/error", "/actuator/**");
     }
