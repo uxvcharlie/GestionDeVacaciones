@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Ingresar', ~{::main})}">
+<body>
+
+<main id="contenido-principal" class="min-h-screen flex items-center justify-center px-4 py-10">
+
+    <div class="w-full max-w-md">
+
+        <div class="text-center mb-8">
+            <span class="text-acento text-4xl block mb-3" aria-hidden="true">◆</span>
+            <h1 class="text-2xl font-semibold">Registro de Vacaciones</h1>
+            <p class="text-suave mt-2">Ingresá con tu usuario y contraseña.</p>
+        </div>
+
+        <div class="tarjeta">
+
+            <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
+
+            <form th:action="@{/ingresar}" method="post" class="mt-5 space-y-5">
+
+                <div>
+                    <label class="etiqueta" for="usuario">Usuario</label>
+                    <input class="campo" type="text" id="usuario" name="usuario"
+                           autocomplete="username" required autofocus
+                           inputmode="text" spellcheck="false">
+                </div>
+
+                <div>
+                    <label class="etiqueta" for="clave">Contraseña</label>
+                    <input class="campo" type="password" id="clave" name="clave"
+                           autocomplete="current-password" required>
+                </div>
+
+                <button type="submit" class="boton-primario w-full">Ingresar</button>
+
+            </form>
+        </div>
+
+        <p class="text-suave text-sm text-center mt-6">
+            ¿No podés entrar? Pedile ayuda a la persona que administra el sistema.
+        </p>
+
+    </div>
+
+</main>
+
+</body>
+</html>

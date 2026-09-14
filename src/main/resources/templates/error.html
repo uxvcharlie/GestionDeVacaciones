@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!--
+  Página de error propia.
+
+  Spring Boot muestra esta plantilla ante cualquier error, en lugar de su
+  pantalla blanca con datos técnicos. Nunca se ve un "stacktrace", ni la
+  palabra "Exception", ni el nombre de una tabla: eso se queda en los registros
+  del servidor, que es donde sirve.
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Algo salió mal', ~{::main})}">
+<body>
+
+<main id="contenido-principal" class="min-h-screen flex items-center justify-center px-4 py-10">
+
+    <div class="w-full max-w-md text-center">
+
+        <span class="text-alerta text-5xl block mb-4" aria-hidden="true">⚠</span>
+
+        <h1 class="text-2xl font-semibold mb-3"
+            th:switch="${status}">
+            <span th:case="404">No encontramos esa página</span>
+            <span th:case="403">No tenés permiso para ver esto</span>
+            <span th:case="*">Algo salió mal</span>
+        </h1>
+
+        <p class="text-suave mb-8" th:switch="${status}">
+            <span th:case="404">
+                Puede que la dirección esté mal escrita o que la página ya no exista.
+            </span>
+            <span th:case="403">
+                Esta sección está reservada. Si creés que deberías poder entrar,
+                consultá con quien administra el sistema.
+            </span>
+            <span th:case="*">
+                No pudimos completar lo que estabas haciendo. Volvé a intentarlo;
+                si vuelve a pasar, avisale a quien administra el sistema.
+            </span>
+        </p>
+
+        <a th:href="@{/}" class="boton-primario">Volver al inicio</a>
+
+    </div>
+
+</main>
+
+</body>
+</html>

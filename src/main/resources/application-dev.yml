@@ -1,0 +1,19 @@
+# ===========================================================================
+#  Perfil "dev" — SOLO para tu computadora mientras desarrollás.
+#  Se activa con:  SPRING_PROFILES_ACTIVE=dev
+#  Nunca se activa en producción.
+# ===========================================================================
+spring:
+  thymeleaf:
+    # Sin caché: cambiás un archivo .html, recargás el navegador y ya se ve.
+    cache: false
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    # Mostrar el SQL que se ejecuta, para que puedas ver qué hace Hibernate.
+    org.hibernate.SQL: DEBUG
+    org.flywaydb: DEBUG
