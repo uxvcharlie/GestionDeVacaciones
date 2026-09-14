@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Bitácora', ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-5xl px-4 py-8 space-y-6">
+
+        <div th:replace="~{fragmentos/admin :: pestanas('bitacora')}"></div>
+
+        <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
+
+        <div>
+            <h2 class="text-xl font-semibold">Bitácora</h2>
+            <p class="ayuda">
+                Lo importante que pasa en el sistema: ingresos, registros, anulaciones, ajustes y
+                cambios de configuración. No se puede modificar ni borrar.
+            </p>
+        </div>
+
+        <form th:action="@{/admin/bitacora}" method="get" class="tarjeta grid gap-4 sm:grid-cols-4 sm:items-end">
+            <div class="sm:col-span-2">
+                <label class="etiqueta" for="accion">Qué pasó</label>
+                <select id="accion" name="accion" class="campo">
+                    <option value="">Todo</option>
+                    <option th:each="a : ${acciones}" th:value="${a.name()}" th:text="${a.etiqueta}"
+                            th:selected="${a.name() == accion}">Registró una solicitud</option>
+                </select>
+            </div>
+            <div>
+                <label class="etiqueta" for="desde">Desde</label>
+                <input id="desde" name="desde" type="date" class="campo" th:value="${desde}">
+            </div>
+            <div>
+                <label class="etiqueta" for="hasta">Hasta</label>
+                <input id="hasta" name="hasta" type="date" class="campo" th:value="${hasta}">
+            </div>
+            <div class="sm:col-span-4 flex flex-wrap gap-3">
+                <button type="submit" class="boton-primario">Filtrar</button>
+                <a th:href="@{/admin/bitacora}" class="boton-secundario">Ver todo</a>
+            </div>
+        </form>
+
+        <p class="text-suave text-sm" aria-live="polite"
+           th:text="${pagina.total() == 1} ? '1 registro' : |${pagina.total()} registros|">120 registros</p>
+
+        <p th:if="${#lists.isEmpty(pagina.renglones())}" class="tarjeta text-suave">
+            No hay registros con esos filtros.
+        </p>
+
+        <ol th:unless="${#lists.isEmpty(pagina.renglones())}" class="space-y-3">
+            <li th:each="r : ${pagina.renglones()}" class="tarjeta p-4">
+                <div class="flex flex-wrap items-baseline justify-between gap-2">
+                    <p class="font-semibold" th:text="${pagina.etiqueta(r.accion)}">Registró una solicitud</p>
+                    <p class="text-suave text-sm" th:text="${@formatos.fechaHora(r.creadoEn, zona)}">14/09/2026 3:45 pm</p>
+                </div>
+                <p th:if="${r.detalle != null}" class="text-sm mt-1 break-words" th:text="${r.detalle}">Detalle</p>
+                <p class="text-sm text-suave mt-1">
+                    <span th:text="${r.usuarioId != null} ? |Por ${pagina.nombres()[r.usuarioId] ?: 'un usuario que ya no existe'}| : 'Sin usuario identificado'">Por Brenda Vásquez</span>
+                    <span th:if="${r.ip != null}" th:text="|· IP ${r.ip}|">· IP 10.0.0.1</span>
+                </p>
+            </li>
+        </ol>
+
+        <nav th:if="${pagina.hayAnterior() or pagina.haySiguiente()}" aria-label="Páginas de la bitácora"
+             class="flex flex-wrap justify-between gap-3">
+            <a th:if="${pagina.hayAnterior()}" class="boton-secundario"
+               th:href="@{/admin/bitacora(accion=${accion},desde=${desde},hasta=${hasta},pagina=${pagina.pagina() - 1})}">
+                ← Más recientes
+            </a>
+            <a th:if="${pagina.haySiguiente()}" class="boton-secundario"
+               th:href="@{/admin/bitacora(accion=${accion},desde=${desde},hasta=${hasta},pagina=${pagina.pagina() + 1})}">
+                Más antiguos →
+            </a>
+        </nav>
+
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Parámetros', ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-5xl px-4 py-8 space-y-6">
+
+        <div th:replace="~{fragmentos/admin :: pestanas('parametros')}"></div>
+
+        <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
+
+        <h2 class="text-xl font-semibold">Parámetros</h2>
+
+        <form th:action="@{/admin/parametros}" method="post" th:object="${formulario}"
+              class="tarjeta max-w-lg space-y-6">
+
+            <div>
+                <label class="etiqueta" for="horasPorJornada">Horas por jornada</label>
+                <input class="campo" type="number" th:field="*{horasPorJornada}" min="1" max="24" step="1"
+                       inputmode="numeric" required aria-describedby="ayuda-jornada"
+                       th:classappend="${#fields.hasErrors('horasPorJornada')} ? 'campo-error'">
+                <p id="ayuda-jornada" class="ayuda">
+                    Cuántas horas tiene un día completo de trabajo. Sirve para mostrar los saldos en días.
+                    Cambiarla no modifica ningún saldo guardado, pero sí cómo se ven: antes de guardar
+                    vas a ver un ejemplo.
+                </p>
+                <p class="ayuda text-error" role="alert"
+                   th:if="${#fields.hasErrors('horasPorJornada')}" th:errors="*{horasPorJornada}">Error</p>
+            </div>
+
+            <div>
+                <label class="etiqueta" for="zonaHoraria">Zona horaria</label>
+                <input class="campo" type="text" th:field="*{zonaHoraria}" required
+                       autocomplete="off" spellcheck="false" autocapitalize="none" aria-describedby="ayuda-zona"
+                       th:classappend="${#fields.hasErrors('zonaHoraria')} ? 'campo-error'">
+                <p id="ayuda-zona" class="ayuda">
+                    Con esta zona se muestran las fechas y horas, y se calcula el saludo del inicio.
+                    Para Nicaragua: <span class="font-mono">America/Managua</span>.
+                </p>
+                <p class="ayuda text-error" role="alert"
+                   th:if="${#fields.hasErrors('zonaHoraria')}" th:errors="*{zonaHoraria}">Error</p>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" class="boton-primario">Guardar parámetros</button>
+            </div>
+        </form>
+
+    </div>
+
+</main>
+
+</body>
+</html>
