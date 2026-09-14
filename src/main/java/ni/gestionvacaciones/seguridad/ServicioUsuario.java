@@ -1,5 +1,7 @@
 package ni.gestionvacaciones.seguridad;
 
+import ni.gestionvacaciones.auditoria.AccionAuditoria;
+import ni.gestionvacaciones.auditoria.ServicioAuditoria;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,10 +13,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Operaciones sobre usuarios del sistema.
- *
- * <p>En esta fase solo necesitamos dos cosas: crear el administrador inicial y
- * cambiar la contraseña. El panel completo de usuarios llega en la Fase 5.</p>
+ * Operaciones básicas sobre usuarios: crear, buscar y cambiar la propia
+ * contraseña. La administración (bloquear, restablecer) está en
+ * {@code ServicioAdministracionUsuarios}.
  */
 @Service
 public class ServicioUsuario {
@@ -22,13 +23,16 @@ public class ServicioUsuario {
     private final UsuarioRepositorio repositorio;
     private final PasswordEncoder codificador;
     private final PoliticaPassword politica;
+    private final ServicioAuditoria auditoria;
 
     public ServicioUsuario(UsuarioRepositorio repositorio,
                            PasswordEncoder codificador,
-                           PoliticaPassword politica) {
+                           PoliticaPassword politica,
+                           ServicioAuditoria auditoria) {
         this.repositorio = repositorio;
         this.codificador = codificador;
         this.politica = politica;
+        this.auditoria = auditoria;
     }
 
     /**
@@ -73,12 +77,13 @@ public class ServicioUsuario {
     }
 
     /**
-     * Cambia la contraseña de un usuario.
+     * Cambia la propia contraseña.
      *
      * @return vacío si salió bien; si no, el mensaje en español para la pantalla
      */
     @Transactional
-    public Optional<String> cambiarPassword(String username, String actual, String nueva, String confirmacion) {
+    public Optional<String> cambiarPassword(String username, String actual, String nueva, String confirmacion,
+                                            String ip) {
         Optional<Usuario> encontrado = buscarPorUsername(username);
         if (encontrado.isEmpty()) {
             return Optional.of("No pudimos identificar tu usuario. Volvé a ingresar.");
@@ -102,6 +107,8 @@ public class ServicioUsuario {
         usuario.setPasswordHash(codificador.encode(nueva));
         usuario.setDebeCambiarPassword(false);
         repositorio.save(usuario);
+        auditoria.registrar(usuario.getId(), AccionAuditoria.PASSWORD_CAMBIADA,
+                ServicioAuditoria.ENTIDAD_USUARIO, usuario.getId(), null, ip);
         return Optional.empty();
     }
 

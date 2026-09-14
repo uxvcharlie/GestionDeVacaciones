@@ -7,6 +7,15 @@ package ni.gestionvacaciones.auditoria;
  */
 public enum AccionAuditoria {
 
+    INGRESO_EXITOSO("Ingresó al sistema"),
+    INGRESO_FALLIDO("Intento de ingreso fallido"),
+    USUARIO_BLOQUEADO_POR_INTENTOS("Usuario bloqueado por intentos fallidos"),
+    USUARIO_CREADO("Creó un usuario"),
+    USUARIO_BLOQUEADO("Bloqueó un usuario"),
+    USUARIO_DESBLOQUEADO("Desbloqueó un usuario"),
+    PASSWORD_RESTABLECIDA("Restableció una contraseña"),
+    PASSWORD_CAMBIADA("Cambió su contraseña"),
+    PARAMETRO_CAMBIADO("Cambió un parámetro"),
     FUNCIONARIO_REGISTRADO("Registró a un funcionario"),
     FUNCIONARIO_DADO_DE_BAJA("Dio de baja a un funcionario"),
     FUNCIONARIO_REACTIVADO("Reactivó a un funcionario"),

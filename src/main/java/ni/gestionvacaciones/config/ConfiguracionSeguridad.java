@@ -1,6 +1,8 @@
 package ni.gestionvacaciones.config;
 
 import jakarta.servlet.http.HttpServletResponse;
+import ni.gestionvacaciones.seguridad.ManejadorIngresoExitoso;
+import ni.gestionvacaciones.seguridad.ManejadorIngresoFallido;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,7 +40,9 @@ public class ConfiguracionSeguridad {
     }
 
     @Bean
-    public SecurityFilterChain cadenaDeFiltros(HttpSecurity http) throws Exception {
+    public SecurityFilterChain cadenaDeFiltros(HttpSecurity http,
+                                               ManejadorIngresoExitoso ingresoExitoso,
+                                               ManejadorIngresoFallido ingresoFallido) throws Exception {
         http
             // -----------------------------------------------------------------
             // Quién puede entrar a qué
@@ -52,6 +56,9 @@ public class ConfiguracionSeguridad {
                 .requestMatchers("/error").permitAll()
                 // Render consulta esta dirección para saber si la app está viva.
                 .requestMatchers("/actuator/health").permitAll()
+                // Administración: solo el rol ADMIN. Hoy todos los usuarios lo
+                // son, pero la regla queda escrita para cuando exista otro rol.
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 // TODO lo demás exige haber ingresado. Esta línea va de última
                 // y es la que garantiza que no se nos escape ninguna pantalla.
                 .anyRequest().authenticated()
@@ -65,8 +72,12 @@ public class ConfiguracionSeguridad {
                 .loginProcessingUrl("/ingresar")   // a dónde manda el formulario
                 .usernameParameter("usuario")
                 .passwordParameter("clave")
-                .defaultSuccessUrl("/", true)      // siempre al tablero
-                .failureUrl("/ingresar?error")
+                // Al entrar: reinicia los intentos fallidos, anota el ingreso en la
+                // bitácora y lleva al tablero.
+                .successHandler(ingresoExitoso)
+                // Al fallar: cuenta el intento, bloquea 15 minutos al quinto y
+                // muestra el mensaje que corresponde.
+                .failureHandler(ingresoFallido)
                 .permitAll()
             )
 
