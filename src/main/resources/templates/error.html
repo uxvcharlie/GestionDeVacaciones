@@ -17,10 +17,11 @@
 
         <span class="text-alerta text-5xl block mb-4" aria-hidden="true">⚠</span>
 
-        <h1 class="text-2xl font-semibold mb-3"
-            th:switch="${status}">
+        <h1 class="text-2xl font-semibold mb-3" th:switch="${status}">
             <span th:case="404">No encontramos esa página</span>
             <span th:case="403">No tenés permiso para ver esto</span>
+            <span th:case="400">Algo en la dirección no está bien escrito</span>
+            <span th:case="405">Esa página se abre desde un formulario</span>
             <span th:case="*">Algo salió mal</span>
         </h1>
 
@@ -31,6 +32,13 @@
             <span th:case="403">
                 Esta sección está reservada. Si creés que deberías poder entrar,
                 consultá con quien administra el sistema.
+            </span>
+            <span th:case="400">
+                Volvé al inicio y buscá lo que necesitás desde el menú.
+            </span>
+            <span th:case="405">
+                Seguramente recargaste la página o la abriste desde un marcador.
+                No se guardó nada: volvé al inicio y empezá de nuevo.
             </span>
             <span th:case="*">
                 No pudimos completar lo que estabas haciendo. Volvé a intentarlo;

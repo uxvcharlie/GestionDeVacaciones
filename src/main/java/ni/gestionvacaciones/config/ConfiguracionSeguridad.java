@@ -1,5 +1,6 @@
 package ni.gestionvacaciones.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -7,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CsrfException;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
 /**
@@ -93,6 +95,24 @@ public class ConfiguracionSeguridad {
                 // Si la sesión venció (30 minutos sin actividad), se vuelve al
                 // login con un aviso, no con un error.
                 .invalidSessionUrl("/ingresar?expirada")
+            )
+
+            // -----------------------------------------------------------------
+            // Formularios con el token de seguridad vencido
+            // -----------------------------------------------------------------
+            .exceptionHandling(excepciones -> excepciones
+                // Si un formulario llega con un token CSRF que ya no es válido
+                // (por ejemplo, quedó abierto desde una sesión anterior), no se
+                // procesa, y en vez de un "403 prohibido" se vuelve al inicio con
+                // un aviso en español. Cualquier otro acceso denegado sigue
+                // siendo un 403, que muestra la página de error propia.
+                .accessDeniedHandler((peticion, respuesta, error) -> {
+                    if (error instanceof CsrfException) {
+                        respuesta.sendRedirect(peticion.getContextPath() + "/?vencido");
+                    } else {
+                        respuesta.sendError(HttpServletResponse.SC_FORBIDDEN);
+                    }
+                })
             )
 
             // -----------------------------------------------------------------

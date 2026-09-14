@@ -20,6 +20,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -116,12 +117,14 @@ class ControladorEmpleadosWebTest extends PruebaConPostgres {
                 .andReturn().getResponse().getRedirectedUrl();
         assertThat(destino).startsWith("/ingresar");
 
-        // Con un token inventado: 403, prohibido.
+        // Con un token inventado (por ejemplo, un formulario que quedó abierto
+        // de una sesión anterior): no se procesa y se avisa en el inicio.
         mvc.perform(post("/empleados").with(conSesion()).with(csrf().useInvalidToken())
                         .param("nombreCompleto", "Intento Sin Token")
                         .param("saldoDias", "1")
                         .param("saldoHoras", "0"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/?vencido"));
 
         // Y en ninguno de los dos casos se guardó nada.
         assertThat(servicioEmpleados.buscar("Intento Sin Token", true)).isEmpty();
