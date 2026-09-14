@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina(${empleado.nombreCompleto}, ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-5xl px-4 py-8 space-y-6">
+
+        <p><a th:href="@{/empleados}" class="enlace">← Volver a empleados</a></p>
+
+        <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
+
+        <div class="flex flex-wrap items-start justify-between gap-4">
+            <div class="min-w-0">
+                <h1 class="text-2xl sm:text-3xl font-semibold break-words"
+                    th:text="${empleado.nombreCompleto}">María González</h1>
+                <p class="text-suave mt-1"
+                   th:unless="${#strings.isEmpty(empleado.descripcionPuesto())}"
+                   th:text="${empleado.descripcionPuesto()}">Asistente · Contabilidad</p>
+            </div>
+            <span th:unless="${empleado.activo}" class="insignia insignia-baja text-sm">
+                <span aria-hidden="true">⏸</span>
+                De baja
+            </span>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-3">
+
+            <!-- El saldo, bien grande y siempre en lenguaje natural. -->
+            <section class="tarjeta md:col-span-1" aria-labelledby="titulo-saldo">
+                <h2 id="titulo-saldo" class="text-suave text-sm font-medium">Saldo disponible</h2>
+                <p class="mt-2 text-4xl sm:text-5xl font-bold leading-tight"
+                   th:text="${@formatos.tiempo(empleado.saldoVacacionesMinutos, horasPorJornada)}">9 días</p>
+                <p class="ayuda" th:text="|Jornada de ${horasPorJornada} horas|">Jornada de 8 horas</p>
+            </section>
+
+            <section class="tarjeta md:col-span-2" aria-labelledby="titulo-datos">
+                <h2 id="titulo-datos" class="font-semibold mb-4">Datos</h2>
+                <dl class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <dt class="text-suave text-sm">Cargo</dt>
+                        <dd th:text="${empleado.cargo} ?: 'No registrado'">Asistente</dd>
+                    </div>
+                    <div>
+                        <dt class="text-suave text-sm">Área o dependencia</dt>
+                        <dd th:text="${empleado.areaODependencia} ?: 'No registrada'">Contabilidad</dd>
+                    </div>
+                    <div>
+                        <dt class="text-suave text-sm">Fecha de ingreso</dt>
+                        <dd th:text="${empleado.fechaIngreso != null} ? ${@formatos.fecha(empleado.fechaIngreso)} : 'No registrada'">01/02/2020</dd>
+                    </div>
+                    <div>
+                        <dt class="text-suave text-sm">Fecha de registro</dt>
+                        <dd th:text="${@formatos.fechaHora(empleado.creadoEn, zona)}">14/09/2026 12:30 pm</dd>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <dt class="text-suave text-sm">Estado</dt>
+                        <dd>
+                            <span th:if="${empleado.activo}" class="text-exito">
+                                <span aria-hidden="true">✓</span> Activo
+                            </span>
+                            <span th:unless="${empleado.activo}" class="text-alerta">
+                                <span aria-hidden="true">⏸</span> De baja. Su historial se conserva.
+                            </span>
+                        </dd>
+                    </div>
+                </dl>
+            </section>
+        </div>
+
+        <!-- Registrar solicitud y ajustar saldo se agregan acá en la Fase 3. -->
+        <div th:if="${empleado.activo}" class="flex flex-wrap gap-3">
+            <a th:href="@{/empleados/{id}/editar(id=${empleado.id})}" class="boton-secundario">
+                <span aria-hidden="true">✎</span>
+                Editar datos
+            </a>
+            <a th:href="@{/empleados/{id}/baja(id=${empleado.id})}" class="boton-peligro">
+                <span aria-hidden="true">⏸</span>
+                Dar de baja
+            </a>
+        </div>
+
+        <section aria-labelledby="titulo-historial" class="space-y-3">
+            <h2 id="titulo-historial" class="text-xl font-semibold">Historial del saldo</h2>
+
+            <p th:if="${#lists.isEmpty(movimientos)}" class="tarjeta text-suave">
+                Todavía no hay movimientos de saldo.
+            </p>
+
+            <ol th:unless="${#lists.isEmpty(movimientos)}" class="space-y-3">
+                <li th:each="m : ${movimientos}" class="tarjeta p-4">
+                    <div class="flex flex-wrap items-baseline justify-between gap-2">
+                        <p class="font-semibold" th:text="${m.tipoMovimiento.etiqueta}">Saldo inicial</p>
+                        <p class="text-suave text-sm"
+                           th:text="${@formatos.fechaHora(m.creadoEn, zona)}">14/09/2026 12:30 pm</p>
+                    </div>
+                    <p class="mt-2 text-lg font-semibold"
+                       th:classappend="${m.minutos > 0} ? 'text-exito' : 'text-error'">
+                        <span aria-hidden="true" th:text="${m.minutos > 0} ? '▲' : '▼'">▲</span>
+                        <span th:text="${@formatos.tiempoConSigno(m.minutos, horasPorJornada)}">+10 días</span>
+                    </p>
+                    <p class="text-sm text-suave mt-1">
+                        Saldo después:
+                        <span class="text-texto"
+                              th:text="${@formatos.tiempo(m.saldoResultanteMinutos, horasPorJornada)}">10 días</span>
+                    </p>
+                    <p class="text-sm mt-1" th:if="${m.descripcion != null}" th:text="${m.descripcion}">Descripción</p>
+                    <p class="text-sm text-suave mt-1"
+                       th:text="|Por ${nombresUsuarios[m.realizadoPor] ?: 'un usuario que ya no existe'}|">Por Brenda Vásquez</p>
+                </li>
+            </ol>
+        </section>
+
+    </div>
+
+</main>
+
+</body>
+</html>

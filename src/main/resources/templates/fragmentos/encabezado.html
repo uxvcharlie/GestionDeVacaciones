@@ -4,19 +4,32 @@
 
 <!--
   Barra superior de las pantallas internas.
+
+  El menú se oculta mientras la persona está obligada a cambiar su contraseña:
+  cualquier enlace la devolvería a esa pantalla y solo confundiría.
+
   El botón de salir es un formulario POST, no un enlace: así lleva el token
   CSRF y nadie puede cerrarle la sesión a Brenda con un enlace malicioso.
 -->
 <header th:fragment="barra" class="bg-superficie border-b border-elevada">
-    <div class="mx-auto max-w-5xl px-4 py-4 flex flex-wrap items-center justify-between gap-3">
+    <div class="mx-auto max-w-5xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
 
-        <div class="flex items-center gap-3">
+        <a th:href="@{/}" class="flex items-center gap-3 min-h-11 rounded-lg
+                                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento">
             <span class="text-acento text-2xl" aria-hidden="true">◆</span>
             <span class="font-semibold text-lg">Registro de Vacaciones</span>
-        </div>
+        </a>
+
+        <nav th:if="${usuarioActual != null and !usuarioActual.debeCambiarPassword}"
+             aria-label="Principal" class="flex items-center gap-1">
+            <a th:href="@{/}" class="enlace-nav"
+               th:attr="aria-current=${seccion == 'inicio'} ? 'page'">Inicio</a>
+            <a th:href="@{/empleados}" class="enlace-nav"
+               th:attr="aria-current=${seccion == 'empleados'} ? 'page'">Empleados</a>
+        </nav>
 
         <div class="flex items-center gap-4">
-            <span class="text-suave text-sm"
+            <span class="hidden sm:inline text-suave text-sm"
                   th:if="${usuarioActual != null}"
                   th:text="${usuarioActual.nombreCompleto}">Nombre</span>
 

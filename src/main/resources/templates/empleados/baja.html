@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!-- Confirmación con el nombre explícito antes de una acción que no se deshace desde la pantalla. -->
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Dar de baja', ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-lg px-4 py-10">
+        <div class="tarjeta text-center">
+
+            <span class="text-alerta text-5xl block mb-4" aria-hidden="true">⚠</span>
+
+            <h1 class="text-2xl font-semibold mb-3">
+                ¿Dar de baja a <span th:text="${empleado.nombreCompleto}">María González</span>?
+            </h1>
+            <p class="text-suave mb-2">Su historial se conserva.</p>
+            <p class="text-suave mb-8">
+                Va a dejar de aparecer al registrar solicitudes, pero sus datos y todos
+                sus movimientos siguen guardados.
+            </p>
+
+            <form th:action="@{/empleados/{id}/baja(id=${empleado.id})}" method="post"
+                  class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
+                <a th:href="@{/empleados/{id}(id=${empleado.id})}" class="boton-secundario">No, volver</a>
+                <button type="submit" class="boton-peligro">Sí, dar de baja</button>
+            </form>
+
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>
