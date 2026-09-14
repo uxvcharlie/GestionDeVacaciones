@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Inicio', ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-5xl px-4 py-10 space-y-6">
+
+        <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
+
+        <div class="tarjeta">
+            <h1 class="text-2xl font-semibold">
+                Hola,
+                <span th:text="${usuarioActual != null} ? ${usuarioActual.nombreCompleto} : ''">Nombre</span>
+            </h1>
+            <p class="text-suave mt-3">
+                Ya entraste al sistema. Esta pantalla todavía está vacía porque recién
+                terminamos de armar los cimientos: base de datos, ingreso seguro y
+                cambio de contraseña.
+            </p>
+
+            <!--
+              Estado vacío útil: en vez de una pantalla en blanco, explicamos
+              qué sigue. En la Fase 4 esto se reemplaza por el tablero real.
+            -->
+            <div class="mt-6 pt-6 border-t border-elevada">
+                <h2 class="font-semibold mb-3">Qué viene después</h2>
+                <ul class="text-suave space-y-2 list-disc list-inside">
+                    <li>Fase 2 — registrar trabajadores y su saldo.</li>
+                    <li>Fase 3 — anotar vacaciones, citas médicas y permisos, con el descuento automático.</li>
+                    <li>Fase 4 — el tablero completo, con el saludo según la hora y los resúmenes.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

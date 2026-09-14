@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<!--
+  Plantilla base de todas las pantallas.
+
+  Las demás plantillas la usan así:
+      <html th:replace="~{layout :: pagina('Título', ~{::main})}">
+  donde ~{::main} significa "tomá la etiqueta <main> de MI archivo y ponela
+  donde la plantilla base espera el contenido".
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="pagina(titulo, contenido)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title th:text="${titulo} + ' · Registro de Vacaciones'">Registro de Vacaciones</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body class="min-h-screen bg-fondo text-texto">
+
+    <!-- Para quien navega con teclado: primer tabulador salta el encabezado. -->
+    <a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
+
+    <th:block th:replace="${contenido}"></th:block>
+
+</body>
+</html>

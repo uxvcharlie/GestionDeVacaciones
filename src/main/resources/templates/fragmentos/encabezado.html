@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+  Barra superior de las pantallas internas.
+  El botón de salir es un formulario POST, no un enlace: así lleva el token
+  CSRF y nadie puede cerrarle la sesión a Brenda con un enlace malicioso.
+-->
+<header th:fragment="barra" class="bg-superficie border-b border-elevada">
+    <div class="mx-auto max-w-5xl px-4 py-4 flex flex-wrap items-center justify-between gap-3">
+
+        <div class="flex items-center gap-3">
+            <span class="text-acento text-2xl" aria-hidden="true">◆</span>
+            <span class="font-semibold text-lg">Registro de Vacaciones</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <span class="text-suave text-sm"
+                  th:if="${usuarioActual != null}"
+                  th:text="${usuarioActual.nombreCompleto}">Nombre</span>
+
+            <form th:action="@{/salir}" method="post">
+                <button type="submit" class="boton-secundario">
+                    <span aria-hidden="true">⏻</span>
+                    Cerrar sesión
+                </button>
+            </form>
+        </div>
+    </div>
+</header>
+
+</body>
+</html>
