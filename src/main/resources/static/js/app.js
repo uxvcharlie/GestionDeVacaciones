@@ -5,8 +5,8 @@
  * seguridad del navegador (CSP) no permite JavaScript incrustado.
  */
 
-// Buscador de empleados: después de cada búsqueda, anuncia a los lectores de
-// pantalla cuántos resultados quedaron ("3 empleados"). El anuncio vive fuera
+// Buscador de funcionarios: después de cada búsqueda, anuncia a los lectores de
+// pantalla cuántos resultados quedaron ("3 funcionarios"). El anuncio vive fuera
 // de la zona que HTMX reemplaza; si viviera adentro, el lector no lo leería.
 document.addEventListener('htmx:afterSwap', function () {
     var conteo = document.querySelector('[data-conteo]');

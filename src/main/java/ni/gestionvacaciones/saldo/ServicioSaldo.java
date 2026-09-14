@@ -50,7 +50,7 @@ public class ServicioSaldo {
         }
         movimientos.save(new MovimientoSaldo(
                 empleado.getId(), null, TipoMovimiento.SALDO_INICIAL,
-                minutos, minutos, "Saldo con el que se registró al empleado", realizadoPor));
+                minutos, minutos, "Saldo con el que se registró al funcionario", realizadoPor));
     }
 
     @Transactional(readOnly = true)

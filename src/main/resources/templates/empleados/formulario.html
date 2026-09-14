@@ -4,7 +4,7 @@
   Al agregar no hay empleado; al editar, ${empleado} es el que se está editando.
 -->
 <html lang="es" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: pagina(${empleado == null} ? 'Agregar empleado' : 'Editar empleado', ~{::main})}">
+      th:replace="~{layout :: pagina(${empleado == null} ? 'Agregar funcionario' : 'Editar funcionario', ~{::main})}">
 <body>
 
 <main id="contenido-principal">
@@ -14,13 +14,13 @@
     <div class="mx-auto max-w-lg px-4 py-8 space-y-6">
 
         <p>
-            <a th:if="${empleado == null}" th:href="@{/empleados}" class="enlace">← Volver a empleados</a>
+            <a th:if="${empleado == null}" th:href="@{/empleados}" class="enlace">← Volver a funcionarios</a>
             <a th:unless="${empleado == null}" th:href="@{/empleados/{id}(id=${empleado.id})}"
                class="enlace">← Volver a la ficha</a>
         </p>
 
         <h1 class="text-2xl font-semibold">
-            <span th:if="${empleado == null}">Agregar empleado</span>
+            <span th:if="${empleado == null}">Agregar funcionario</span>
             <span th:unless="${empleado == null}"
                   th:text="|Editar datos de ${empleado.nombreCompleto}|">Editar datos</span>
         </h1>
@@ -111,7 +111,7 @@
                     <a th:href="${empleado == null} ? @{/empleados} : @{/empleados/{id}(id=${empleado.id})}"
                        class="boton-secundario">Cancelar</a>
                     <button type="submit" class="boton-primario"
-                            th:text="${empleado == null} ? 'Guardar empleado' : 'Guardar cambios'">Guardar</button>
+                            th:text="${empleado == null} ? 'Guardar funcionario' : 'Guardar cambios'">Guardar</button>
                 </div>
 
             </form>
