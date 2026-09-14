@@ -6,6 +6,9 @@ import ni.gestionvacaciones.parametro.ServicioParametros;
 import ni.gestionvacaciones.saldo.MovimientoSaldo;
 import ni.gestionvacaciones.saldo.ServicioSaldo;
 import ni.gestionvacaciones.seguridad.ServicioUsuario;
+import ni.gestionvacaciones.solicitud.ServicioSolicitudes;
+import ni.gestionvacaciones.solicitud.Solicitud;
+import ni.gestionvacaciones.solicitud.TipoSolicitud;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,11 +21,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 /**
- * Pantallas de empleados: listado con buscador, alta, ficha, edición y baja.
+ * Pantallas de funcionarios: listado con buscador, alta, ficha, edición y baja.
  *
  * <p>Toda acción que cambia datos es un POST con token CSRF. Después de
  * guardar se redirige (patrón POST → redirección → GET), así recargar la
@@ -36,15 +40,18 @@ public class ControladorEmpleados {
 
     private final ServicioEmpleados servicioEmpleados;
     private final ServicioSaldo servicioSaldo;
+    private final ServicioSolicitudes servicioSolicitudes;
     private final ServicioParametros parametros;
     private final ServicioUsuario servicioUsuario;
 
     public ControladorEmpleados(ServicioEmpleados servicioEmpleados,
                                 ServicioSaldo servicioSaldo,
+                                ServicioSolicitudes servicioSolicitudes,
                                 ServicioParametros parametros,
                                 ServicioUsuario servicioUsuario) {
         this.servicioEmpleados = servicioEmpleados;
         this.servicioSaldo = servicioSaldo;
+        this.servicioSolicitudes = servicioSolicitudes;
         this.parametros = parametros;
         this.servicioUsuario = servicioUsuario;
     }
@@ -93,15 +100,28 @@ public class ControladorEmpleados {
         return "redirect:/empleados/" + empleado.getId();
     }
 
+    /** Ficha: datos, saldo, desglose del año, solicitudes y movimientos. */
     @GetMapping("/{id}")
     public String mostrarFicha(@PathVariable Long id, Model modelo) {
         Empleado empleado = servicioEmpleados.obtener(id);
         List<MovimientoSaldo> movimientos = servicioSaldo.historial(id);
+        List<Solicitud> solicitudes = servicioSolicitudes.historial(id);
+
+        Set<Long> usuarios = new HashSet<>();
+        movimientos.forEach(movimiento -> usuarios.add(movimiento.getRealizadoPor()));
+        solicitudes.forEach(solicitud -> {
+            usuarios.add(solicitud.getRegistradoPor());
+            if (solicitud.getAnuladoPor() != null) {
+                usuarios.add(solicitud.getAnuladoPor());
+            }
+        });
 
         modelo.addAttribute("empleado", empleado);
         modelo.addAttribute("movimientos", movimientos);
-        modelo.addAttribute("nombresUsuarios", servicioUsuario.nombresPorId(
-                movimientos.stream().map(MovimientoSaldo::getRealizadoPor).collect(Collectors.toSet())));
+        modelo.addAttribute("solicitudes", solicitudes);
+        modelo.addAttribute("desglose", servicioSolicitudes.desgloseDelAnio(id));
+        modelo.addAttribute("tipos", TipoSolicitud.values());
+        modelo.addAttribute("nombresUsuarios", servicioUsuario.nombresPorId(usuarios));
         modelo.addAttribute("horasPorJornada", parametros.horasPorJornada());
         modelo.addAttribute("zona", parametros.zonaHoraria());
         return "empleados/ficha";
@@ -150,7 +170,7 @@ public class ControladorEmpleados {
         return "redirect:/empleados/" + id;
     }
 
-    /** @param empleado {@code null} al agregar; el empleado actual al editar. */
+    /** @param empleado {@code null} al agregar; el funcionario actual al editar. */
     private void prepararFormulario(Model modelo, Empleado empleado) {
         modelo.addAttribute("empleado", empleado);
         modelo.addAttribute("horasPorJornada", parametros.horasPorJornada());

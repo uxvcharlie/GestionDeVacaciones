@@ -161,3 +161,27 @@
         @apply bg-elevada font-semibold;
     }
 }
+
+/* ===========================================================================
+   Componentes agregados en la Fase 3 (solicitudes y saldos)
+   =========================================================================== */
+@layer components {
+
+    /* Opción grande para elegir (tipo de solicitud, sumar o restar). El radio
+       nativo sigue visible: el estado elegido no depende solo del color. */
+    .opcion {
+        @apply flex items-center gap-3 min-h-14 px-4 py-3 rounded-lg
+               border border-elevada bg-fondo cursor-pointer transition-colors
+               hover:border-acento
+               has-[:checked]:border-acento has-[:checked]:bg-elevada
+               has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-acento;
+    }
+
+    .insignia-anulada {
+        @apply border-error/40 bg-error/10 text-error;
+    }
+
+    .insignia-registrada {
+        @apply border-exito/40 bg-exito/10 text-exito;
+    }
+}

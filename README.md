@@ -221,12 +221,14 @@ sobrescribir la contraseña que la persona ya eligió.
 
 ```
 src/main/java/ni/gestionvacaciones/
+├── auditoria/    bitácora: quién hizo qué, cuándo y desde dónde
 ├── comun/        conversor de minutos a días y formatos de fecha
 ├── config/       configuración de seguridad, MVC y administrador inicial
-├── empleado/     alta, búsqueda, ficha, edición y baja de empleados
+├── empleado/     alta, búsqueda, ficha, edición y baja de funcionarios
 ├── parametro/    lectura de parámetros (horas por jornada, zona horaria)
 ├── saldo/        libro contable del saldo: el único que lo modifica
 ├── seguridad/    usuarios, contraseñas, ingreso
+├── solicitud/    registrar y anular vacaciones, citas médicas y permisos
 └── web/          controladores y pantallas comunes
 
 src/main/resources/
@@ -263,7 +265,9 @@ src/main/tailwind/  archivo fuente de los estilos
       obligatorio de contraseña.
 - [x] **Fase 2** — Empleados: alta con saldo inicial, buscador sin tildes,
       ficha con historial, edición y baja lógica.
-- [ ] **Fase 3** — Solicitudes y saldos.
+- [x] **Fase 3** — Solicitudes y saldos: descuento automático, anulación con
+      devolución, ajuste manual, saldo negativo solo con autorización y
+      bitácora de esas acciones.
 - [ ] **Fase 4** — Interfaz y experiencia de uso.
 - [ ] **Fase 5** — Administración y seguridad.
 - [ ] **Fase 6** — Despliegue, respaldos y manual.

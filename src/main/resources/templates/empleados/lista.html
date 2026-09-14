@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: pagina('Empleados', ~{::main})}">
+      th:replace="~{layout :: pagina('Funcionarios', ~{::main})}">
 <body>
 
 <main id="contenido-principal">
@@ -12,17 +12,17 @@
         <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
 
         <div class="flex flex-wrap items-center justify-between gap-3">
-            <h1 class="text-2xl font-semibold">Empleados</h1>
+            <h1 class="text-2xl font-semibold">Funcionarios</h1>
             <a th:if="${hayEmpleados}" th:href="@{/empleados/nuevo}" class="boton-primario">
                 <span aria-hidden="true">＋</span>
-                Agregar empleado
+                Agregar funcionario
             </a>
         </div>
 
         <!-- Estado vacío: la primera vez no se ve una lista en blanco. -->
         <div th:unless="${hayEmpleados}" class="tarjeta text-center py-12">
             <span class="text-acento text-4xl block mb-4" aria-hidden="true">◇</span>
-            <h2 class="text-xl font-semibold">Todavía no hay empleados registrados</h2>
+            <h2 class="text-xl font-semibold">Todavía no hay funcionarios registrados</h2>
             <p class="text-suave mt-2 mb-6">
                 Agregá a la primera persona para empezar a llevar su control.
             </p>
@@ -69,16 +69,16 @@
             <section id="resultados" aria-label="Resultados de la búsqueda">
 
                 <p data-conteo class="text-suave text-sm mb-3"
-                   th:text="${#lists.size(empleados) == 1} ? '1 empleado' : ${#lists.size(empleados)} + ' empleados'">
-                    3 empleados
+                   th:text="${#lists.size(empleados) == 1} ? '1 funcionario' : ${#lists.size(empleados)} + ' funcionarios'">
+                    3 funcionarios
                 </p>
 
                 <div th:if="${#lists.isEmpty(empleados)}" class="tarjeta text-center py-8">
                     <p class="font-semibold" th:unless="${#strings.isEmpty(q)}">
-                        Ningún empleado coincide con «<span th:text="${q}">texto</span>».
+                        Ningún funcionario coincide con «<span th:text="${q}">texto</span>».
                     </p>
                     <p class="font-semibold" th:if="${#strings.isEmpty(q)}">
-                        No hay empleados activos.
+                        No hay funcionarios activos.
                     </p>
                     <p class="text-suave mt-2">
                         Revisá lo que escribiste, o marcá «Mostrar también a quienes están de baja».

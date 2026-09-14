@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<!--
+  Primera pantalla de dos para registrar una solicitud: funcionario, tipo,
+  fechas, cantidad y motivo. Nada se guarda acá: el siguiente paso muestra el
+  resumen y recién ahí se guarda.
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Registrar solicitud', ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-2xl px-4 py-8 space-y-6">
+
+        <p>
+            <a th:if="${formulario.empleadoId != null}"
+               th:href="@{/empleados/{id}(id=${formulario.empleadoId})}" class="enlace">← Volver a la ficha</a>
+            <a th:unless="${formulario.empleadoId != null}" th:href="@{/}" class="enlace">← Volver al inicio</a>
+        </p>
+
+        <div>
+            <h1 class="text-2xl font-semibold">Registrar solicitud</h1>
+            <p class="text-suave mt-1">
+                Paso 1 de 2. Completá los datos; en el paso siguiente revisás el resumen antes de guardar.
+            </p>
+        </div>
+
+        <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
+
+        <div th:if="${erroresNegocio != null and !#lists.isEmpty(erroresNegocio)}" class="alerta-error" role="alert">
+            <span aria-hidden="true" class="text-xl leading-none">⚠</span>
+            <ul class="space-y-1">
+                <li th:each="error : ${erroresNegocio}" th:text="${error}">Error</li>
+            </ul>
+        </div>
+
+        <!-- Estado vacío: sin funcionarios activos no hay a quién registrarle. -->
+        <div th:if="${#lists.isEmpty(funcionarios)}" class="tarjeta text-center py-10">
+            <h2 class="text-xl font-semibold">Todavía no hay funcionarios activos</h2>
+            <p class="text-suave mt-2 mb-6">Para registrar una solicitud primero tiene que haber al menos un funcionario.</p>
+            <a th:href="@{/empleados/nuevo}" class="boton-primario">Agregar funcionario</a>
+        </div>
+
+        <form th:unless="${#lists.isEmpty(funcionarios)}"
+              th:action="@{/solicitudes/confirmar}" method="post" th:object="${formulario}"
+              class="space-y-6" data-formulario-solicitud>
+
+            <!-- Funcionario -->
+            <section class="tarjeta space-y-2">
+                <label class="etiqueta" for="empleadoId">Funcionario</label>
+                <select class="campo" th:field="*{empleadoId}" required aria-describedby="ayuda-funcionario"
+                        th:classappend="${#fields.hasErrors('empleadoId')} ? 'campo-error'">
+                    <option value="">Elegí un funcionario…</option>
+                    <option th:each="f : ${funcionarios}" th:value="${f.id}"
+                            th:text="${#strings.isEmpty(f.descripcionPuesto())} ? ${f.nombreCompleto} : ${f.nombreCompleto} + ' — ' + ${f.descripcionPuesto()}">
+                        María González — Asistente
+                    </option>
+                </select>
+                <p id="ayuda-funcionario" class="ayuda">
+                    Si hay dos personas con el mismo nombre, fijate en el cargo que aparece al lado.
+                </p>
+                <p class="ayuda text-error" role="alert"
+                   th:if="${#fields.hasErrors('empleadoId')}" th:errors="*{empleadoId}">Error</p>
+            </section>
+
+            <!-- Tipo -->
+            <div class="tarjeta">
+                <fieldset class="space-y-3">
+                    <legend class="etiqueta">Tipo</legend>
+                    <div class="grid gap-3 sm:grid-cols-3">
+                        <label th:each="t : ${tipos}" class="opcion">
+                            <input type="radio" th:field="*{tipo}" th:value="${t}"
+                                   class="size-5 accent-primario" data-tipo-solicitud>
+                            <span aria-hidden="true"
+                                  th:text="${t.name() == 'VACACIONES'} ? '🏖' : (${t.name() == 'CITA_MEDICA'} ? '🩺' : '📝')">🏖</span>
+                            <span class="font-medium" th:text="${t.etiqueta}">Vacaciones</span>
+                        </label>
+                    </div>
+                    <p class="ayuda text-error" role="alert"
+                       th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}">Error</p>
+                </fieldset>
+            </div>
+
+            <!-- Fechas -->
+            <section class="tarjeta space-y-3">
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label class="etiqueta" for="fechaInicio">Desde</label>
+                        <input class="campo" type="date" th:field="*{fechaInicio}" required data-fecha-inicio
+                               th:classappend="${#fields.hasErrors('fechaInicio')} ? 'campo-error'">
+                        <p class="ayuda text-error" role="alert"
+                           th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}">Error</p>
+                    </div>
+                    <div>
+                        <label class="etiqueta" for="fechaFin">Hasta</label>
+                        <input class="campo" type="date" th:field="*{fechaFin}" required data-fecha-fin
+                               th:classappend="${#fields.hasErrors('fechaFin')} ? 'campo-error'">
+                        <p class="ayuda text-error" role="alert"
+                           th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}">Error</p>
+                    </div>
+                </div>
+                <p class="ayuda" data-dias-corridos aria-live="polite"></p>
+                <p class="ayuda">Si es un solo día, poné la misma fecha en los dos campos.</p>
+            </section>
+
+            <!--
+              Cantidad. JavaScript muestra solo la que corresponde al tipo.
+              Sin JavaScript se ven las dos, y el servidor usa la correcta.
+            -->
+            <section class="tarjeta space-y-6">
+
+                <div data-cantidad="VACACIONES" class="space-y-3">
+                    <p class="etiqueta">¿Cuántos días de vacaciones?</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="etiqueta" for="dias">Días</label>
+                            <input class="campo" type="number" th:field="*{dias}" min="0" max="366" step="1"
+                                   inputmode="numeric" th:classappend="${#fields.hasErrors('dias')} ? 'campo-error'">
+                            <p class="ayuda text-error" role="alert"
+                               th:if="${#fields.hasErrors('dias')}" th:errors="*{dias}">Error</p>
+                        </div>
+                        <div>
+                            <label class="etiqueta" for="horasSueltas">Horas sueltas</label>
+                            <input class="campo" type="number" th:field="*{horasSueltas}" min="0" max="23" step="1"
+                                   inputmode="numeric" th:classappend="${#fields.hasErrors('horasSueltas')} ? 'campo-error'">
+                            <p class="ayuda text-error" role="alert"
+                               th:if="${#fields.hasErrors('horasSueltas')}" th:errors="*{horasSueltas}">Error</p>
+                        </div>
+                    </div>
+                    <p class="ayuda"
+                       th:text="|Una jornada completa son ${horasPorJornada} horas. Para medio día, poné 0 días y la mitad de esas horas.|">
+                        Una jornada completa son 8 horas.
+                    </p>
+                </div>
+
+                <div data-cantidad="HORAS" class="space-y-3">
+                    <p class="etiqueta">¿Cuánto dura la cita o el permiso?</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="etiqueta" for="horas">Horas</label>
+                            <input class="campo" type="number" th:field="*{horas}" min="0" max="23" step="1"
+                                   inputmode="numeric" th:classappend="${#fields.hasErrors('horas')} ? 'campo-error'">
+                            <p class="ayuda text-error" role="alert"
+                               th:if="${#fields.hasErrors('horas')}" th:errors="*{horas}">Error</p>
+                        </div>
+                        <div>
+                            <label class="etiqueta" for="minutos">Minutos</label>
+                            <input class="campo" type="number" th:field="*{minutos}" min="0" max="59" step="1"
+                                   inputmode="numeric" th:classappend="${#fields.hasErrors('minutos')} ? 'campo-error'">
+                            <p class="ayuda text-error" role="alert"
+                               th:if="${#fields.hasErrors('minutos')}" th:errors="*{minutos}">Error</p>
+                        </div>
+                    </div>
+                    <p class="ayuda">Se descuenta exactamente ese tiempo, no un día completo.</p>
+                </div>
+            </section>
+
+            <!-- Motivo -->
+            <section class="tarjeta space-y-3">
+                <label class="etiqueta" for="motivo">Motivo <span class="text-suave font-normal">(opcional)</span></label>
+                <textarea class="campo min-h-24" th:field="*{motivo}" maxlength="300" rows="3"
+                          aria-describedby="nota-medica"
+                          th:classappend="${#fields.hasErrors('motivo')} ? 'campo-error'"></textarea>
+                <p class="ayuda text-error" role="alert"
+                   th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}">Error</p>
+                <p id="nota-medica" class="alerta-aviso" data-solo-tipo="CITA_MEDICA">
+                    <span aria-hidden="true" class="text-xl leading-none">ℹ</span>
+                    <span>En una cita médica no escribas diagnósticos ni ningún dato de salud. Podés dejar el motivo vacío.</span>
+                </p>
+            </section>
+
+            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <a th:href="${formulario.empleadoId != null} ? @{/empleados/{id}(id=${formulario.empleadoId})} : @{/}"
+                   class="boton-secundario">Cancelar</a>
+                <button type="submit" class="boton-primario">
+                    Revisar antes de guardar
+                    <span aria-hidden="true">→</span>
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -21,18 +21,22 @@
                 hora, el buscador y los resúmenes del mes, llega en la Fase 4.
             </p>
 
-            <div class="mt-6">
-                <a th:href="@{/empleados}" class="boton-primario">
+            <div class="mt-6 flex flex-wrap gap-3">
+                <a th:href="@{/solicitudes/nueva}" class="boton-primario text-lg px-6">
+                    <span aria-hidden="true">＋</span>
+                    Registrar solicitud
+                </a>
+                <a th:href="@{/empleados}" class="boton-secundario">
                     <span aria-hidden="true">👥</span>
-                    Ver empleados
+                    Ver funcionarios
                 </a>
             </div>
 
             <div class="mt-8 pt-6 border-t border-elevada">
                 <h2 class="font-semibold mb-3">Qué viene después</h2>
                 <ul class="text-suave space-y-2 list-disc list-inside">
-                    <li>Fase 3 — anotar vacaciones, citas médicas y permisos, con el descuento automático.</li>
                     <li>Fase 4 — el tablero completo, con el saludo según la hora y los resúmenes.</li>
+                    <li>Fase 5 — administración de usuarios, bitácora y parámetros.</li>
                 </ul>
             </div>
         </div>

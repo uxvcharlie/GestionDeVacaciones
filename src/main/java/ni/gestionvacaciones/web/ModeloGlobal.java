@@ -39,6 +39,6 @@ public class ModeloGlobal {
     @ModelAttribute("seccion")
     public String seccion(HttpServletRequest peticion) {
         String ruta = peticion.getRequestURI().substring(peticion.getContextPath().length());
-        return ruta.startsWith("/empleados") ? "empleados" : "inicio";
+        return ruta.startsWith("/empleados") || ruta.startsWith("/solicitudes") ? "empleados" : "inicio";
     }
 }
