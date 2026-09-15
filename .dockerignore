@@ -1,0 +1,16 @@
+# Lo que NO entra a la imagen. Menos archivos = construcción más rápida, y
+# ningún secreto ni respaldo termina dentro de un contenedor.
+.git
+.github
+.idea
+.vscode
+target
+node_modules
+docs
+scripts
+*.md
+.env
+.env.*
+*.dump
+Dockerfile
+.dockerignore

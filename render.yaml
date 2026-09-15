@@ -1,0 +1,38 @@
+# ===========================================================================
+#  Blueprint de Render: describe el servicio en un archivo, en lugar de
+#  configurarlo a mano en la web. Render lo lee al crear el servicio con
+#  "New → Blueprint" y elegir este repositorio.
+#
+#  Las variables con "sync: false" son secretas: Render las pide al crear el
+#  servicio y NO se escriben acá. Nunca pongas un valor secreto en este archivo.
+# ===========================================================================
+services:
+  - name: gestion-vacaciones
+    type: web
+    runtime: docker
+    plan: free
+    # Ohio: la región de Render más cercana a Nicaragua, y la misma de la base
+    # en Neon (AWS US East 2, Ohio). Base y aplicación juntas = menos demora.
+    region: ohio
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    # No consulta la base: Render sabe si la aplicación vive sin despertar a Neon.
+    healthCheckPath: /actuator/health/liveness
+    # Solo despliega si las pruebas de GitHub Actions pasaron.
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DB_URL
+        sync: false
+      - key: DB_USUARIO
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD_INICIAL
+        sync: false
+      - key: ADMIN_NOMBRE
+        value: Brenda Vásquez
