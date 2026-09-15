@@ -15,6 +15,9 @@ public class ServicioAuditoria {
 
     public static final String ENTIDAD_SOLICITUD = "solicitud";
     public static final String ENTIDAD_EMPLEADO = "empleado";
+    public static final String ENTIDAD_USUARIO = "usuario";
+    public static final String ENTIDAD_PARAMETRO = "parametro";
+    public static final String ENTIDAD_REPORTE = "reporte";
 
     private final AuditoriaRepositorio repositorio;
 

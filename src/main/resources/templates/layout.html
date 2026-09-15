@@ -21,6 +21,9 @@
     -->
     <meta name="htmx-config" content='{"includeIndicatorStyles":false,"allowEval":false}'>
 
+    <!-- Duración de la sesión, para el aviso de inactividad. Solo con sesión abierta. -->
+    <meta th:if="${usuarioActual != null}" name="sesion-minutos" th:content="${minutosSesion}">
+
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
 
     <!-- Todo se sirve desde la propia aplicación: nada de CDN. -->
@@ -33,6 +36,32 @@
     <a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
 
     <th:block th:replace="${contenido}"></th:block>
+
+    <!--
+      Aviso de sesión por vencer. app.js lo abre un minuto antes de que se
+      cumpla el tiempo sin actividad. Es un <dialog> nativo: atrapa el foco del
+      teclado mientras está abierto y se cierra con Escape.
+    -->
+    <dialog th:if="${usuarioActual != null}" id="aviso-sesion"
+            aria-labelledby="aviso-sesion-titulo" aria-describedby="aviso-sesion-texto"
+            class="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-elevada bg-superficie p-6 text-texto
+                   backdrop:bg-black/70">
+        <h2 id="aviso-sesion-titulo" class="text-xl font-semibold">
+            <span aria-hidden="true" class="text-alerta">⏱</span>
+            Tu sesión está por cerrarse
+        </h2>
+        <p id="aviso-sesion-texto" class="text-suave mt-2">
+            Por seguridad, la sesión se cierra después de
+            <span th:text="${minutosSesion}">30</span> minutos sin actividad.
+            Quedan <strong class="text-texto" data-segundos-sesion>60</strong> segundos.
+        </p>
+        <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <form th:action="@{/salir}" method="post">
+                <button type="submit" class="boton-secundario w-full">Cerrar sesión</button>
+            </form>
+            <button type="button" class="boton-primario" data-seguir-trabajando autofocus>Seguir trabajando</button>
+        </div>
+    </dialog>
 
 </body>
 </html>

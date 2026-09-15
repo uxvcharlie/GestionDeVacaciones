@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Encabezado y pestañas de la sección de administración. -->
+<div th:fragment="pestanas(activa)" class="space-y-4">
+    <div>
+        <h1 class="text-2xl font-semibold">Administración</h1>
+        <p class="text-suave mt-1">Quiénes pueden entrar al sistema, qué pasó y cómo está configurado.</p>
+    </div>
+    <nav aria-label="Secciones de administración" class="flex flex-wrap gap-2">
+        <a th:href="@{/admin/usuarios}" class="enlace-nav border border-elevada"
+           th:attr="aria-current=${activa == 'usuarios'} ? 'page'">
+            <span aria-hidden="true">👤</span>&nbsp;Usuarios
+        </a>
+        <a th:href="@{/admin/bitacora}" class="enlace-nav border border-elevada"
+           th:attr="aria-current=${activa == 'bitacora'} ? 'page'">
+            <span aria-hidden="true">📜</span>&nbsp;Bitácora
+        </a>
+        <a th:href="@{/admin/parametros}" class="enlace-nav border border-elevada"
+           th:attr="aria-current=${activa == 'parametros'} ? 'page'">
+            <span aria-hidden="true">⚙</span>&nbsp;Parámetros
+        </a>
+    </nav>
+</div>
+
+</body>
+</html>

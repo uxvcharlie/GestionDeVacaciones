@@ -1,6 +1,7 @@
 package ni.gestionvacaciones.solicitud;
 
 import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -58,4 +59,35 @@ public interface SolicitudRepositorio extends JpaRepository<Solicitud, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from Solicitud s where s.id = :id")
     Optional<Solicitud> bloquearParaAnular(@Param("id") Long id);
+
+    /** Cantidad y minutos por tipo en un rango de fechas de inicio. Para el tablero. */
+    @Query("""
+            select s.tipo, count(s), sum(s.minutosSolicitados) from Solicitud s
+            where s.estado = :estado
+              and s.fechaInicio between :desde and :hasta
+            group by s.tipo
+            """)
+    List<Object[]> resumirPorTipo(@Param("estado") EstadoSolicitud estado,
+                                  @Param("desde") LocalDate desde,
+                                  @Param("hasta") LocalDate hasta);
+
+    /** Las últimas solicitudes registradas (también las anuladas), con el nombre del funcionario. */
+    @Query("""
+            select new ni.gestionvacaciones.solicitud.SolicitudReciente(s, e.nombreCompleto)
+            from Solicitud s, Empleado e
+            where e.id = s.empleadoId
+            order by s.creadoEn desc, s.id desc
+            """)
+    List<SolicitudReciente> recientes(Limit limite);
+
+    /** Solicitudes que empiezan en un rango de fechas, registradas y anuladas, con datos del funcionario. Para reportes. */
+    @Query("""
+            select new ni.gestionvacaciones.reporte.SolicitudConFuncionario(s, e.nombreCompleto, e.cargo, e.areaODependencia)
+            from Solicitud s, Empleado e
+            where e.id = s.empleadoId
+              and s.fechaInicio between :desde and :hasta
+            order by s.fechaInicio, e.nombreCompleto, s.id
+            """)
+    List<ni.gestionvacaciones.reporte.SolicitudConFuncionario> conFuncionarioEnPeriodo(@Param("desde") LocalDate desde,
+                                                                                      @Param("hasta") LocalDate hasta);
 }

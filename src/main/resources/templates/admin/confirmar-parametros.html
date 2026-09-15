@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!-- Antes de cambiar la jornada, un ejemplo concreto de cómo se van a ver los saldos. -->
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Confirmar cambio de jornada', ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-lg px-4 py-10">
+        <div class="tarjeta space-y-5">
+
+            <h1 class="text-2xl font-semibold"
+                th:text="|¿Cambiar la jornada de ${horasActuales} a ${formulario.horasPorJornada} horas?|">
+                ¿Cambiar la jornada?
+            </h1>
+
+            <p class="text-suave">
+                Ningún saldo guardado cambia, porque se guardan en minutos. Lo que cambia es cómo se
+                muestran en días, en todo el sistema.
+            </p>
+
+            <div class="rounded-lg border border-elevada bg-fondo p-4">
+                <p class="text-suave text-sm">Por ejemplo, un saldo que hoy se ve como</p>
+                <p class="text-xl font-semibold" th:text="${ejemploAntes}">10 días</p>
+                <p class="text-suave text-sm mt-3">se va a ver como</p>
+                <p class="text-xl font-semibold text-alerta" th:text="${ejemploDespues}">13 días y 2 horas</p>
+            </div>
+
+            <form th:action="@{/admin/parametros}" method="post" th:object="${formulario}"
+                  class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <input type="hidden" th:field="*{horasPorJornada}">
+                <input type="hidden" th:field="*{zonaHoraria}">
+                <input type="hidden" name="confirmado" value="true">
+                <a th:href="@{/admin/parametros}" class="boton-secundario">No, dejarla como está</a>
+                <button type="submit" class="boton-primario" data-un-solo-envio>Sí, cambiar la jornada</button>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>

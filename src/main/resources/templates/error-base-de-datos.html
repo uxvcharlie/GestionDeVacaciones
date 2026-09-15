@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--
+  La base de datos no respondió a tiempo. Ver ManejadorBaseDeDatosNoDisponible.
+  Esta pantalla no consulta la base: tiene que funcionar justamente cuando la base no está.
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Un momento', ~{::main})}">
+<body>
+
+<main id="contenido-principal" class="min-h-screen flex items-center justify-center px-4 py-10">
+
+    <div class="w-full max-w-md text-center space-y-4">
+
+        <span class="text-acento text-5xl block" aria-hidden="true">☾</span>
+
+        <h1 class="text-2xl font-semibold">El sistema se está despertando</h1>
+
+        <p class="text-suave">
+            Después de un rato sin uso, la base de datos se apaga para ahorrar recursos y
+            tarda unos segundos en volver.
+        </p>
+
+        <p th:if="${reintentoAutomatico}" data-reintentar-en="8" aria-live="polite">
+            Vuelvo a intentar solo en <strong data-segundos-reintento>8</strong> segundos.
+        </p>
+
+        <p th:unless="${reintentoAutomatico}" class="alerta-aviso text-left">
+            <span aria-hidden="true" class="text-xl leading-none">ℹ</span>
+            <span>No se guardó nada. Esperá unos segundos y volvé a intentarlo.</span>
+        </p>
+
+        <div class="pt-2">
+            <a th:if="${reintentoAutomatico}" href="" class="boton-primario">Reintentar ahora</a>
+            <a th:unless="${reintentoAutomatico}" th:href="@{/}" class="boton-primario">Volver al inicio</a>
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

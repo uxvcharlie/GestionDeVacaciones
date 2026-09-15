@@ -311,7 +311,7 @@ class ServicioSolicitudesTest extends PruebaConPostgres {
     @DisplayName("A un funcionario de baja no se le registran solicitudes")
     void funcionarioDeBaja() {
         Empleado funcionario = crearFuncionario("Solicitud Funcionario De Baja", 5, 0);
-        servicioEmpleados.darDeBaja(funcionario.getId());
+        servicioEmpleados.darDeBaja(funcionario.getId(), brenda().getId(), null);
 
         assertThatThrownBy(() -> servicioSolicitudes.registrar(
                 vacaciones(funcionario, HOY, HOY, 1, 0), brenda(), null))

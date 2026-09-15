@@ -1,0 +1,35 @@
+# ===========================================================================
+#  Perfil "prod" — producción en Render.
+#  Se activa con la variable de entorno SPRING_PROFILES_ACTIVE=prod.
+#  Lo que no está acá sale de application.yml.
+# ===========================================================================
+server:
+  # Render termina el HTTPS y le pasa la petición a la aplicación con las
+  # cabeceras X-Forwarded-For y X-Forwarded-Proto. "native" hace que Tomcat
+  # las lea SOLO si vienen de una red interna (el balanceador de Render):
+  #   - request.isSecure() dice la verdad, y funcionan HTTPS y HSTS;
+  #   - la bitácora guarda la IP real de quien usa el sistema.
+  # Un visitante no puede falsificar su IP, porque las cabeceras que llegan
+  # desde afuera de la red interna se ignoran.
+  forward-headers-strategy: native
+  servlet:
+    session:
+      cookie:
+        # En producción la cookie de sesión viaja solo por HTTPS, siempre,
+        # sin depender de que alguien se acuerde de configurarlo.
+        secure: true
+
+app:
+  seguridad:
+    # Render YA redirige todo HTTP a HTTPS en su borde ("Render automatically
+    # redirects all HTTP requests to HTTPS"). La redirección propia de la
+    # aplicación queda apagada por defecto porque, si Tomcat no reconociera al
+    # balanceador de Render, redirigiría en bucle y la aplicación quedaría
+    # inutilizable. Después del primer despliegue, si la bitácora muestra la IP
+    # real, se puede encender como segunda barrera con EXIGIR_HTTPS=true.
+    exigir-https: ${EXIGIR_HTTPS:false}
+
+logging:
+  level:
+    root: INFO
+    ni.gestionvacaciones: INFO

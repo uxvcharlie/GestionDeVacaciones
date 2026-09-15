@@ -122,3 +122,114 @@ window.addEventListener('pageshow', function (evento) {
         });
     }
 });
+
+// ---------------------------------------------------------------------------
+// Aviso de sesión por vencer.
+//
+// La sesión se cierra tras N minutos sin actividad (lo decide el servidor).
+// Un minuto antes aparece el aviso con "Seguir trabajando", que hace una
+// petición mínima al servidor y así reinicia la cuenta, sin recargar la página
+// ni perder lo que se estaba escribiendo.
+//
+// Cada búsqueda con HTMX también es actividad, así que reinicia la cuenta.
+// ---------------------------------------------------------------------------
+(function () {
+    var meta = document.querySelector('meta[name="sesion-minutos"]');
+    var dialogo = document.getElementById('aviso-sesion');
+    if (!meta || !dialogo || typeof dialogo.showModal !== 'function') {
+        return;
+    }
+
+    var duracion = parseInt(meta.content, 10) * 60 * 1000;
+    var anticipacion = 60 * 1000;
+    var segundos = dialogo.querySelector('[data-segundos-sesion]');
+    var botonSeguir = dialogo.querySelector('[data-seguir-trabajando]');
+    var temporizadorAviso = null;
+    var temporizadorCierre = null;
+    var cuentaRegresiva = null;
+
+    function programar() {
+        clearTimeout(temporizadorAviso);
+        clearTimeout(temporizadorCierre);
+        clearInterval(cuentaRegresiva);
+        temporizadorAviso = setTimeout(mostrarAviso, Math.max(duracion - anticipacion, 0));
+        // Unos segundos de margen: para cuando esto se ejecuta, el servidor
+        // seguro ya cerró la sesión, y el inicio redirige al ingreso con aviso.
+        temporizadorCierre = setTimeout(sesionVencida, duracion + 5000);
+    }
+
+    function mostrarAviso() {
+        var restantes = Math.round(anticipacion / 1000);
+        if (segundos) {
+            segundos.textContent = restantes;
+        }
+        cuentaRegresiva = setInterval(function () {
+            restantes = Math.max(restantes - 1, 0);
+            if (segundos) {
+                segundos.textContent = restantes;
+            }
+        }, 1000);
+        if (!dialogo.open) {
+            dialogo.showModal();
+        }
+    }
+
+    function sesionVencida() {
+        clearInterval(cuentaRegresiva);
+        window.location.href = '/';
+    }
+
+    function seguirTrabajando() {
+        fetch('/sesion/mantener', { credentials: 'same-origin', redirect: 'manual' })
+            .then(function (respuesta) {
+                if (respuesta.status === 204) {
+                    clearInterval(cuentaRegresiva);
+                    dialogo.close();
+                    programar();
+                } else {
+                    sesionVencida();
+                }
+            })
+            .catch(function () {
+                // Sin conexión: se cierra el aviso y se vuelve a intentar al próximo aviso.
+                clearInterval(cuentaRegresiva);
+                dialogo.close();
+                programar();
+            });
+    }
+
+    botonSeguir.addEventListener('click', seguirTrabajando);
+
+    // Escape cierra el diálogo: lo tomamos como "seguir trabajando".
+    dialogo.addEventListener('cancel', function (evento) {
+        evento.preventDefault();
+        seguirTrabajando();
+    });
+
+    document.addEventListener('htmx:afterRequest', programar);
+    programar();
+})();
+
+// ---------------------------------------------------------------------------
+// Página "el sistema se está despertando": vuelve a intentar sola, con cuenta
+// regresiva. Solo aparece en consultas, nunca después de enviar un formulario.
+// ---------------------------------------------------------------------------
+(function () {
+    var aviso = document.querySelector('[data-reintentar-en]');
+    if (!aviso) {
+        return;
+    }
+    var segundos = parseInt(aviso.getAttribute('data-reintentar-en'), 10) || 8;
+    var contador = aviso.querySelector('[data-segundos-reintento]');
+    var intervalo = setInterval(function () {
+        segundos -= 1;
+        if (contador) {
+            contador.textContent = Math.max(segundos, 0);
+        }
+        if (segundos <= 0) {
+            clearInterval(intervalo);
+            window.location.reload();
+        }
+    }, 1000);
+})();
+

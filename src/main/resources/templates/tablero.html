@@ -7,39 +7,118 @@
 
     <div th:replace="~{fragmentos/encabezado :: barra}"></div>
 
-    <div class="mx-auto max-w-5xl px-4 py-10 space-y-6">
+    <div class="mx-auto max-w-5xl px-4 py-8 space-y-8">
 
         <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
 
-        <div class="tarjeta">
-            <h1 class="text-2xl font-semibold">
-                Hola,
-                <span th:text="${usuarioActual != null} ? ${usuarioActual.nombreCompleto} : ''">Nombre</span>
-            </h1>
-            <p class="text-suave mt-3">
-                Este tablero todavía es provisional. El definitivo, con el saludo según la
-                hora, el buscador y los resúmenes del mes, llega en la Fase 4.
+        <!-- Saludo según la hora de Managua, calculado en el servidor. -->
+        <section class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <h1 class="text-3xl sm:text-4xl font-bold" th:text="${resumen.saludo()}">Buenos días, Brenda</h1>
+                <p class="text-suave mt-1" th:text="|Hoy es ${resumen.hoy()}|">Hoy es lunes 14 de septiembre de 2026</p>
+            </div>
+            <a th:if="${resumen.hayFuncionarios()}" th:href="@{/solicitudes/nueva}"
+               class="boton-primario min-h-14 px-6 text-lg">
+                <span aria-hidden="true">＋</span>
+                Registrar solicitud
+            </a>
+        </section>
+
+        <!-- Estado vacío: la primera vez, en lugar de números en cero. -->
+        <section th:unless="${resumen.hayFuncionarios()}" class="tarjeta text-center py-12">
+            <span class="text-acento text-4xl block mb-4" aria-hidden="true">◇</span>
+            <h2 class="text-xl font-semibold">Todavía no hay funcionarios registrados</h2>
+            <p class="text-suave mt-2 mb-6">
+                Empezá agregando a la primera persona con su saldo. Después vas a poder registrarle solicitudes.
             </p>
+            <a th:href="@{/empleados/nuevo}" class="boton-primario">Agregar el primero</a>
+        </section>
 
-            <div class="mt-6 flex flex-wrap gap-3">
-                <a th:href="@{/solicitudes/nueva}" class="boton-primario text-lg px-6">
-                    <span aria-hidden="true">＋</span>
-                    Registrar solicitud
-                </a>
-                <a th:href="@{/empleados}" class="boton-secundario">
-                    <span aria-hidden="true">👥</span>
-                    Ver funcionarios
-                </a>
-            </div>
+        <th:block th:if="${resumen.hayFuncionarios()}">
 
-            <div class="mt-8 pt-6 border-t border-elevada">
-                <h2 class="font-semibold mb-3">Qué viene después</h2>
-                <ul class="text-suave space-y-2 list-disc list-inside">
-                    <li>Fase 4 — el tablero completo, con el saludo según la hora y los resúmenes.</li>
-                    <li>Fase 5 — administración de usuarios, bitácora y parámetros.</li>
-                </ul>
-            </div>
-        </div>
+            <!--
+              Buscador. Sin JavaScript lleva al listado completo con la búsqueda.
+              Con HTMX, mientras se escribe pide solo los resultados.
+            -->
+            <section class="tarjeta space-y-3" aria-labelledby="titulo-buscar">
+                <h2 id="titulo-buscar" class="font-semibold">Buscar funcionario</h2>
+                <form th:action="@{/empleados}" method="get" role="search"
+                      th:attr="hx-get=@{/tablero/buscar}"
+                      hx-trigger="input delay:250ms, search, submit"
+                      hx-target="#resultados-tablero" hx-swap="innerHTML" hx-sync="this:replace">
+                    <label for="q" class="sr-only">Nombre del funcionario</label>
+                    <input id="q" name="q" type="search" class="campo" autocomplete="off" spellcheck="false"
+                           placeholder="Escribí parte del nombre">
+                </form>
+                <p id="anuncio-busqueda" class="sr-only" aria-live="polite"></p>
+                <div id="resultados-tablero">
+                    <p class="ayuda">Escribí un nombre y los resultados aparecen acá. No importan las tildes.</p>
+                </div>
+            </section>
+
+            <!-- Resumen del mes -->
+            <section aria-labelledby="titulo-resumen" class="space-y-3">
+                <h2 id="titulo-resumen" class="text-xl font-semibold" th:text="|Resumen de ${resumen.mes()}|">
+                    Resumen de septiembre de 2026
+                </h2>
+                <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                    <div class="tarjeta p-4">
+                        <p class="text-suave text-sm">Funcionarios activos</p>
+                        <p class="text-3xl font-bold mt-1" th:text="${resumen.funcionariosActivos()}">40</p>
+                        <p class="text-suave text-sm">
+                            <a th:href="@{/empleados}" class="enlace">Ver todos</a>
+                        </p>
+                    </div>
+                    <div th:each="t : ${tipos}" class="tarjeta p-4">
+                        <p class="text-suave text-sm" th:text="${t.etiqueta}">Vacaciones</p>
+                        <p class="text-3xl font-bold mt-1" th:text="${resumen.delMes(t).cantidad()}">3</p>
+                        <p class="text-suave text-sm"
+                           th:text="${resumen.delMes(t).cantidad() == 1} ? |solicitud · ${t.formatear(resumen.delMes(t).minutos(), horasPorJornada)}| : |solicitudes · ${t.formatear(resumen.delMes(t).minutos(), horasPorJornada)}|">
+                            solicitudes · 5 días
+                        </p>
+                    </div>
+                </div>
+                <p class="ayuda">Cuenta las solicitudes que empiezan este mes. Las anuladas no se cuentan.</p>
+            </section>
+
+            <!-- Últimas solicitudes -->
+            <section aria-labelledby="titulo-recientes" class="space-y-3">
+                <h2 id="titulo-recientes" class="text-xl font-semibold">Últimas solicitudes</h2>
+
+                <p th:if="${#lists.isEmpty(resumen.recientes())}" class="tarjeta text-suave">
+                    Todavía no se registró ninguna solicitud. Cuando registres la primera, aparece acá.
+                </p>
+
+                <ol th:unless="${#lists.isEmpty(resumen.recientes())}" class="tarjeta p-0 divide-y divide-elevada overflow-hidden">
+                    <li th:each="r : ${resumen.recientes()}">
+                        <a th:href="@{/empleados/{id}(id=${r.solicitud().empleadoId})}"
+                           class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 min-h-14 px-4 py-3
+                                  hover:bg-elevada focus-visible:outline-none focus-visible:ring-2
+                                  focus-visible:ring-inset focus-visible:ring-acento">
+                            <span class="min-w-0">
+                                <span class="block font-medium break-words" th:text="${r.nombreFuncionario()}">María González</span>
+                                <span class="block text-suave text-sm">
+                                    <span th:text="${r.solicitud().tipo.etiqueta}">Vacaciones</span>
+                                    <span aria-hidden="true">·</span>
+                                    <span th:if="${r.solicitud().deUnSoloDia}"
+                                          th:text="|el ${@formatos.fecha(r.solicitud().fechaInicio)}|">el 21/09/2026</span>
+                                    <span th:unless="${r.solicitud().deUnSoloDia}"
+                                          th:text="|del ${@formatos.fecha(r.solicitud().fechaInicio)} al ${@formatos.fecha(r.solicitud().fechaFin)}|">del … al …</span>
+                                </span>
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <span th:classappend="${!r.solicitud().registrada} ? 'line-through text-suave'"
+                                      th:text="${r.solicitud().tipo.formatear(r.solicitud().minutosSolicitados, horasPorJornada)}">5 días</span>
+                                <span th:unless="${r.solicitud().registrada}" class="insignia insignia-anulada">
+                                    <span aria-hidden="true">✕</span> Anulada
+                                </span>
+                            </span>
+                        </a>
+                    </li>
+                </ol>
+            </section>
+
+        </th:block>
 
     </div>
 

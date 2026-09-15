@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+  Resultados del buscador del tablero. El controlador devuelve SOLO este
+  pedazo, y HTMX lo pone dentro de #resultados-tablero.
+-->
+<div th:fragment="resultados">
+
+    <p th:if="${#strings.isEmpty(q)}" class="ayuda">
+        Escribí un nombre y los resultados aparecen acá. No importan las tildes.
+    </p>
+
+    <th:block th:unless="${#strings.isEmpty(q)}">
+
+        <p data-conteo class="text-suave text-sm mb-2"
+           th:text="${totalEncontrados == 0} ? |Ningún funcionario activo coincide con «${q}».| : (${totalEncontrados == 1} ? '1 funcionario' : |${totalEncontrados} funcionarios|)">
+            3 funcionarios
+        </p>
+
+        <ul th:unless="${#lists.isEmpty(encontrados)}" class="divide-y divide-elevada">
+            <li th:each="e : ${encontrados}">
+                <a th:href="@{/empleados/{id}(id=${e.id})}"
+                   class="flex items-center justify-between gap-3 min-h-14 px-2 py-2 rounded-lg
+                          hover:bg-elevada focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento">
+                    <span class="min-w-0">
+                        <span class="block font-medium break-words" th:text="${e.nombreCompleto}">María González</span>
+                        <span class="block text-suave text-sm"
+                              th:unless="${#strings.isEmpty(e.descripcionPuesto())}"
+                              th:text="${e.descripcionPuesto()}">Asistente</span>
+                    </span>
+                    <span class="shrink-0 text-right">
+                        <span class="sr-only">Saldo:</span>
+                        <span th:text="${@formatos.tiempo(e.saldoVacacionesMinutos, horasPorJornada)}">9 días</span>
+                    </span>
+                </a>
+            </li>
+        </ul>
+
+        <p th:if="${hayMas}" class="mt-2">
+            <a th:href="@{/empleados(q=${q})}" class="enlace">Ver todos los resultados</a>
+        </p>
+    </th:block>
+
+</div>
+
+</body>
+</html>

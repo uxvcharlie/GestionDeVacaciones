@@ -76,6 +76,16 @@ public class ControladorSolicitudes {
         return VISTA_FORMULARIO;
     }
 
+    /**
+     * Estas direcciones solo reciben formularios. Si alguien las abre directo
+     * (recargando la página o desde un marcador), va al comienzo del registro
+     * en lugar de ver un error.
+     */
+    @GetMapping({"", "/confirmar", "/corregir"})
+    public String volverAlComienzo() {
+        return "redirect:/solicitudes/nueva";
+    }
+
     @PostMapping("/confirmar")
     public String confirmar(@Valid @ModelAttribute("formulario") FormularioSolicitud formulario,
                             BindingResult errores,

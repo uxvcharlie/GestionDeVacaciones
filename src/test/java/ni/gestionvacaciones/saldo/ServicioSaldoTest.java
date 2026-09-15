@@ -55,7 +55,8 @@ class ServicioSaldoTest extends PruebaConPostgres {
 
         assertThat(auditoriaRepositorio.findByEntidadAndEntidadIdOrderByCreadoEnDescIdDesc(
                 ServicioAuditoria.ENTIDAD_EMPLEADO, funcionario.getId()))
-                .extracting(Auditoria::getAccion).containsOnly("SALDO_AJUSTADO").hasSize(2);
+                .extracting(Auditoria::getAccion)
+                .containsExactly("SALDO_AJUSTADO", "SALDO_AJUSTADO", "FUNCIONARIO_REGISTRADO");
     }
 
     @Test

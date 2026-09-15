@@ -17,7 +17,15 @@ spring:
       # Pool chico a propósito: la app corre con 512 MB de RAM y la base
       # gratuita de Neon tampoco admite muchas conexiones.
       maximum-pool-size: 5
-      minimum-idle: 1
+      # Neon apaga la base después de 5 minutos sin uso. Si el pool dejara
+      # conexiones abiertas de sobra, la base nunca dormiría y gastaría horas
+      # de cómputo del plan gratuito. Por eso: cero conexiones en reposo.
+      minimum-idle: 0
+      idle-timeout: 60000
+      # Renovar cada conexión a los 5 minutos: Neon puede cortar las viejas.
+      max-lifetime: 300000
+      # Despertar la base tarda unos segundos: se espera hasta 30 s por una
+      # conexión antes de mostrar el aviso de "el sistema se está despertando".
       connection-timeout: 30000
 
   jpa:
@@ -37,6 +45,9 @@ spring:
     # Si la base no está vacía y no tiene historial de Flyway, preferimos que
     # falle y avise, en lugar de adivinar.
     baseline-on-migrate: false
+    # Si al arrancar la base todavía está dormida, reintentar en vez de fallar.
+    connect-retries: 10
+    connect-retries-interval: 3s
 
   thymeleaf:
     cache: true
@@ -47,6 +58,8 @@ spring:
 
 server:
   port: ${PORT:8080}
+  # Al apagar (por ejemplo, en un despliegue nuevo), terminar las peticiones en curso.
+  shutdown: graceful
   servlet:
     session:
       # La sesión muere a los 30 minutos sin actividad.
@@ -79,6 +92,11 @@ management:
   endpoint:
     health:
       show-details: never
+      # /actuator/health/liveness responde sin consultar la base: sirve para
+      # que Render sepa que la aplicación está viva, y para el "ping" que la
+      # mantiene despierta, sin despertar también la base de datos.
+      probes:
+        enabled: true
 
 logging:
   level:
@@ -90,6 +108,10 @@ logging:
 # arranque, y solo si la tabla usuario está vacía.
 # ---------------------------------------------------------------------------
 app:
+  seguridad:
+    # En producción (perfil prod) se exige HTTPS. En tu computadora no, porque
+    # http://localhost no tiene certificado.
+    exigir-https: ${EXIGIR_HTTPS:false}
   admin-inicial:
     username: ${ADMIN_USERNAME:}
     password: ${ADMIN_PASSWORD_INICIAL:}
