@@ -210,3 +210,26 @@ window.addEventListener('pageshow', function (evento) {
     programar();
 })();
 
+// ---------------------------------------------------------------------------
+// Página "el sistema se está despertando": vuelve a intentar sola, con cuenta
+// regresiva. Solo aparece en consultas, nunca después de enviar un formulario.
+// ---------------------------------------------------------------------------
+(function () {
+    var aviso = document.querySelector('[data-reintentar-en]');
+    if (!aviso) {
+        return;
+    }
+    var segundos = parseInt(aviso.getAttribute('data-reintentar-en'), 10) || 8;
+    var contador = aviso.querySelector('[data-segundos-reintento]');
+    var intervalo = setInterval(function () {
+        segundos -= 1;
+        if (contador) {
+            contador.textContent = Math.max(segundos, 0);
+        }
+        if (segundos <= 0) {
+            clearInterval(intervalo);
+            window.location.reload();
+        }
+    }, 1000);
+})();
+

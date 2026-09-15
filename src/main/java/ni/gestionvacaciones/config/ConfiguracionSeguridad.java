@@ -3,6 +3,7 @@ package ni.gestionvacaciones.config;
 import jakarta.servlet.http.HttpServletResponse;
 import ni.gestionvacaciones.seguridad.ManejadorIngresoExitoso;
 import ni.gestionvacaciones.seguridad.ManejadorIngresoFallido;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CsrfException;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
 /**
@@ -42,7 +45,9 @@ public class ConfiguracionSeguridad {
     @Bean
     public SecurityFilterChain cadenaDeFiltros(HttpSecurity http,
                                                ManejadorIngresoExitoso ingresoExitoso,
-                                               ManejadorIngresoFallido ingresoFallido) throws Exception {
+                                               ManejadorIngresoFallido ingresoFallido,
+                                               @Value("${app.seguridad.exigir-https:false}") boolean exigirHttps)
+            throws Exception {
         http
             // -----------------------------------------------------------------
             // Quién puede entrar a qué
@@ -55,7 +60,7 @@ public class ConfiguracionSeguridad {
                 // Página de error propia.
                 .requestMatchers("/error").permitAll()
                 // Render consulta esta dirección para saber si la app está viva.
-                .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                 // Administración: solo el rol ADMIN. Hoy todos los usuarios lo
                 // son, pero la regla queda escrita para cuando exista otro rol.
                 .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -171,6 +176,20 @@ public class ConfiguracionSeguridad {
         // formulario que use th:action.
 
         // X-Content-Type-Options: nosniff también viene activado por omisión.
+
+        // ---------------------------------------------------------------------
+        // HTTPS obligatorio en producción
+        // ---------------------------------------------------------------------
+        // Render recibe la conexión por HTTPS y se la pasa a la aplicación por
+        // HTTP, avisando en una cabecera que el original era seguro (el perfil
+        // prod le dice a Tomcat que lea esa cabecera). Toda petición que no
+        // venga por HTTPS se redirige. La única excepción es el chequeo de
+        // salud, que Render hace por dentro, sin HTTPS: si se redirigiera,
+        // Render creería que la aplicación está caída.
+        if (exigirHttps) {
+            http.redirectToHttps(https -> https.requestMatchers(
+                    new NegatedRequestMatcher(PathPatternRequestMatcher.withDefaults().matcher("/actuator/health/**"))));
+        }
 
         return http.build();
     }

@@ -2,6 +2,7 @@ package ni.gestionvacaciones.seguridad;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -27,8 +28,15 @@ public class ManejadorIngresoFallido implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest peticion, HttpServletResponse respuesta,
                                         AuthenticationException error) throws IOException {
-        ServicioIntentosIngreso.Resultado resultado =
-                intentos.registrarFallo(peticion.getParameter("usuario"), peticion.getRemoteAddr());
+        ServicioIntentosIngreso.Resultado resultado;
+        try {
+            resultado = intentos.registrarFallo(peticion.getParameter("usuario"), peticion.getRemoteAddr());
+        } catch (DataAccessException e) {
+            // La base de datos no respondió (por ejemplo, Neon estaba dormida y no
+            // alcanzó a despertar). No es culpa de la contraseña: se avisa distinto.
+            respuesta.sendRedirect(peticion.getContextPath() + "/ingresar?despertando");
+            return;
+        }
 
         String destino = switch (resultado) {
             case BLOQUEADO -> "/ingresar?bloqueado";

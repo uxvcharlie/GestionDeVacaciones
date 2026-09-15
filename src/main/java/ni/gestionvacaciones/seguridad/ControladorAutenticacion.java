@@ -36,6 +36,7 @@ public class ControladorAutenticacion {
     public String mostrarIngreso(@RequestParam(required = false) String error,
                                  @RequestParam(required = false) String bloqueado,
                                  @RequestParam(required = false) String desactivado,
+                                 @RequestParam(required = false) String despertando,
                                  @RequestParam(required = false) String salida,
                                  @RequestParam(required = false) String expirada,
                                  Principal principal,
@@ -57,6 +58,10 @@ public class ControladorAutenticacion {
         if (desactivado != null) {
             modelo.addAttribute("mensajeError", "Tu usuario está bloqueado. Si creés que es un error, "
                     + "hablá con quien administra el sistema.");
+        }
+        if (despertando != null) {
+            modelo.addAttribute("mensajeAviso", "El sistema se estaba despertando y no alcanzó a responder. "
+                    + "Esperá unos segundos y volvé a intentar.");
         }
         if (salida != null) {
             modelo.addAttribute("mensajeAviso", "Cerraste tu sesión. Hasta luego.");
