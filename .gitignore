@@ -13,6 +13,11 @@ target/
 # ---------------------------------------------------------------------------
 .env
 .env.local
+.env.respaldo
+
+# Respaldos de la base: tienen datos personales
+*.dump
+*.dump.parcial
 *.pem
 *.key
 
