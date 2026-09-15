@@ -79,4 +79,15 @@ public interface SolicitudRepositorio extends JpaRepository<Solicitud, Long> {
             order by s.creadoEn desc, s.id desc
             """)
     List<SolicitudReciente> recientes(Limit limite);
+
+    /** Solicitudes que empiezan en un rango de fechas, registradas y anuladas, con datos del funcionario. Para reportes. */
+    @Query("""
+            select new ni.gestionvacaciones.reporte.SolicitudConFuncionario(s, e.nombreCompleto, e.cargo, e.areaODependencia)
+            from Solicitud s, Empleado e
+            where e.id = s.empleadoId
+              and s.fechaInicio between :desde and :hasta
+            order by s.fechaInicio, e.nombreCompleto, s.id
+            """)
+    List<ni.gestionvacaciones.reporte.SolicitudConFuncionario> conFuncionarioEnPeriodo(@Param("desde") LocalDate desde,
+                                                                                      @Param("hasta") LocalDate hasta);
 }

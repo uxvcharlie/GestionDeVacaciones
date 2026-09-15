@@ -105,6 +105,17 @@
             </a>
         </div>
 
+        <!-- Reporte para imprimir o guardar. -->
+        <div class="flex flex-wrap items-center gap-3">
+            <span class="text-suave text-sm">Descargar reporte:</span>
+            <a th:href="@{/reportes/funcionario/{id}(id=${empleado.id},formato='excel')}" class="boton-secundario">
+                <span aria-hidden="true">⬇</span> Excel
+            </a>
+            <a th:href="@{/reportes/funcionario/{id}(id=${empleado.id},formato='csv')}" class="boton-secundario">
+                <span aria-hidden="true">⬇</span> CSV
+            </a>
+        </div>
+
         <!-- Reactivar: deshace una baja hecha por error. -->
         <div th:unless="${empleado.activo}" class="tarjeta flex flex-wrap items-center justify-between gap-3">
             <p class="text-suave">

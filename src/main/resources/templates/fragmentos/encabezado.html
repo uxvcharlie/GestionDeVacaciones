@@ -26,6 +26,8 @@
                th:attr="aria-current=${seccion == 'inicio'} ? 'page'">Inicio</a>
             <a th:href="@{/empleados}" class="enlace-nav"
                th:attr="aria-current=${seccion == 'empleados'} ? 'page'">Funcionarios</a>
+            <a th:href="@{/reportes}" class="enlace-nav"
+               th:attr="aria-current=${seccion == 'reportes'} ? 'page'">Reportes</a>
             <a th:if="${usuarioActual.rol.name() == 'ADMIN'}" th:href="@{/admin/usuarios}" class="enlace-nav"
                th:attr="aria-current=${seccion == 'admin'} ? 'page'">Administración</a>
         </nav>

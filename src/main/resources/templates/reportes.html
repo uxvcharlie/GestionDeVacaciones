@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: pagina('Reportes', ~{::main})}">
+<body>
+
+<main id="contenido-principal">
+
+    <div th:replace="~{fragmentos/encabezado :: barra}"></div>
+
+    <div class="mx-auto max-w-3xl px-4 py-8 space-y-6">
+
+        <div>
+            <h1 class="text-2xl font-semibold">Reportes</h1>
+            <p class="text-suave mt-1">
+                Para imprimir o guardar. <strong class="text-texto">Excel</strong> trae varias hojas con formato;
+                <strong class="text-texto">CSV</strong> se abre con cualquier programa.
+            </p>
+        </div>
+
+        <div th:replace="~{fragmentos/mensajes :: avisos}"></div>
+
+        <section class="tarjeta space-y-4" aria-labelledby="titulo-mes">
+            <h2 id="titulo-mes" class="text-xl font-semibold">Solicitudes de un mes</h2>
+
+            <form th:action="@{/reportes/mes}" method="get" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4 max-w-md">
+                    <div>
+                        <label class="etiqueta" for="mes">Mes</label>
+                        <select id="mes" name="mes" class="campo">
+                            <option th:each="m : ${meses}" th:value="${m.numero()}" th:text="${m.nombre()}"
+                                    th:selected="${m.numero() == mesActual}">Septiembre</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="etiqueta" for="anio">Año</label>
+                        <select id="anio" name="anio" class="campo">
+                            <option th:each="a : ${anios}" th:value="${a}" th:text="${a}"
+                                    th:selected="${a == anioActual}">2026</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <button type="submit" name="formato" value="excel" class="boton-primario">
+                        <span aria-hidden="true">⬇</span> Descargar Excel
+                    </button>
+                    <button type="submit" name="formato" value="csv" class="boton-secundario">
+                        <span aria-hidden="true">⬇</span> Descargar CSV
+                    </button>
+                </div>
+            </form>
+
+            <p class="ayuda">
+                Incluye todas las solicitudes que empiezan en ese mes. Las anuladas también aparecen,
+                marcadas como anuladas, pero no se suman en el resumen.
+            </p>
+        </section>
+
+        <section class="tarjeta space-y-2" aria-labelledby="titulo-funcionario">
+            <h2 id="titulo-funcionario" class="text-xl font-semibold">Reporte de un funcionario</h2>
+            <p class="text-suave">
+                Se descarga desde su ficha: datos, saldo, desglose del año, solicitudes y el
+                historial completo del saldo.
+            </p>
+            <p><a th:href="@{/empleados}" class="enlace">Ir a funcionarios</a></p>
+        </section>
+
+        <p class="ayuda">Cada descarga queda anotada en la bitácora, porque los reportes llevan datos personales.</p>
+
+    </div>
+
+</main>
+
+</body>
+</html>

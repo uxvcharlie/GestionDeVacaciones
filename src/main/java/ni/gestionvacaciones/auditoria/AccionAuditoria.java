@@ -16,6 +16,7 @@ public enum AccionAuditoria {
     PASSWORD_RESTABLECIDA("Restableció una contraseña"),
     PASSWORD_CAMBIADA("Cambió su contraseña"),
     PARAMETRO_CAMBIADO("Cambió un parámetro"),
+    REPORTE_DESCARGADO("Descargó un reporte"),
     FUNCIONARIO_REGISTRADO("Registró a un funcionario"),
     FUNCIONARIO_DADO_DE_BAJA("Dio de baja a un funcionario"),
     FUNCIONARIO_REACTIVADO("Reactivó a un funcionario"),
