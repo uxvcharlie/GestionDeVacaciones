@@ -95,13 +95,24 @@ La bitácora se escribe dentro de la misma transacción que la acción: nunca re
 
 ---
 
-## Qué falta para producción (Fase 6)
+## Producción
 
-1. **HTTPS obligatorio detrás de Render.** Render termina el HTTPS y le pasa la petición a la aplicación por HTTP. Hay que activar `server.forward-headers-strategy=framework` para que la aplicación sepa que la petición original era segura, y así se cumplen la redirección de HTTP a HTTPS y el HSTS.
-2. **IP real en la bitácora.** Por el mismo motivo, sin ese ajuste la IP registrada sería la del intermediario de Render y no la de Brenda.
-3. **`COOKIE_SEGURA=true`** en las variables de entorno de producción.
-4. **Respaldo periódico de la base**, fuera de Neon.
-5. **Dependencias al día.** Revisar mensualmente si hay versiones nuevas de Spring Boot con arreglos de seguridad.
+| Medida | Qué protege | Cómo quedó |
+|---|---|---|
+| **HTTPS de punta a punta** | Nadie en la red de la oficina puede leer contraseñas ni datos. | Render redirige todo HTTP a HTTPS en su borde. La redirección propia de la aplicación queda como segunda barrera opcional (`EXIGIR_HTTPS=true`). Está apagada por defecto porque, si Tomcat no reconociera al balanceador, entraría en bucle. |
+| **Cabeceras del balanceador leídas solo si vienen de la red interna** (`forward-headers-strategy: native`) | La bitácora guarda la IP real, y HSTS se envía. | **Probado en el contenedor:** con una petición desde la red interna se anotó la IP real (`203.0.113.9`). Con un `X-Forwarded-For: 1.2.3.4, 198.51.100.7` falsificado se ignoró la IP inventada. Desde afuera, las cabeceras se ignoran. |
+| **Cookie `Secure` forzada** por el perfil `prod` | La sesión nunca viaja sin cifrar. | No depende de ninguna variable. Probado en el contenedor. |
+| **Conexión a Neon con `sslmode=require&channelBinding=require`** | Cifra el tráfico con la base e impide que un intermediario se haga pasar por Neon. | En la cadena JDBC de producción. |
+| **Imagen sin root y sin herramientas de compilación** | Si alguien lograra ejecutar algo dentro del contenedor, no tendría permisos de administrador ni un compilador. | Usuario `aplicacion` (uid 100), solo el JRE. |
+| **Solo `/actuator/health` expuesto, sin detalles** | No se filtran versiones, variables ni el estado interno. | `liveness` no consulta la base. |
+| **Despliegue solo con pruebas en verde** | Un cambio que rompe una regla del saldo no llega a producción. | `autoDeployTrigger: checksPass` en `render.yaml`. |
+| **Respaldos cifrados en tránsito y fuera de Neon** | Si Neon pierde la base o desaparece el plan gratuito, los datos siguen existiendo. | `scripts/respaldar.sh`, con archivos solo legibles por su dueño. **Probado:** respaldo y restauración idénticos tabla por tabla. |
+
+**Tareas que quedan para siempre:**
+
+- **Dependencias al día.** Una vez por mes, revisar si hay versiones nuevas de Spring Boot con arreglos de seguridad.
+- **Respaldos.** Revisar que el temporizador semanal siga corriendo y, cada tanto, probar una restauración en una base aparte.
+- **Usuarios.** Bloquear de inmediato a quien deje la oficina.
 
 ## Decisiones conscientes
 
