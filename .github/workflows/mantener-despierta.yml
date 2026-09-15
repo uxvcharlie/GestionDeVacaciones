@@ -1,0 +1,41 @@
+# ===========================================================================
+#  Mantiene despierta la aplicación en Render durante el horario de oficina.
+#
+#  El plan gratuito de Render duerme el servicio tras 15 minutos sin tráfico,
+#  y despertarlo tarda alrededor de un minuto. Tocando la aplicación cada 10
+#  minutos, Brenda nunca espera ese minuto mientras trabaja.
+#
+#  Solo toca /actuator/health/liveness, que NO consulta la base de datos: así
+#  Neon sí puede dormir y no gasta horas de cómputo cuando nadie la usa.
+#
+#  Horario: lunes a viernes, de 7:00 am a 5:59 pm hora de Managua
+#  (UTC−6, sin horario de verano) = de 13:00 a 23:59 UTC.
+#
+#  Para activarlo: Settings → Secrets and variables → Actions → Variables →
+#  New repository variable: URL_APLICACION = https://tu-app.onrender.com
+# ===========================================================================
+name: Mantener despierta la aplicación
+
+on:
+  schedule:
+    - cron: "*/10 13-23 * * 1-5"
+  # Para probarlo a mano desde la pestaña Actions.
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  tocar:
+    name: Tocar la aplicación
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    # Sin la variable configurada, no hace nada (y no falla).
+    if: vars.URL_APLICACION != ''
+    env:
+      URL_APLICACION: ${{ vars.URL_APLICACION }}
+    steps:
+      - name: Pedir el chequeo de salud
+        run: >
+          curl --silent --show-error --fail
+          --max-time 120 --retry 2 --retry-delay 15
+          "$URL_APLICACION/actuator/health/liveness"
