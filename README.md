@@ -201,12 +201,25 @@ la IP real y se envía HSTS.
 ## Despliegue
 
 **Resumen:** la base en **Neon**, la aplicación en **Render**, ambas gratis y
-en Ohio. Render construye la imagen desde este repositorio con el `Dockerfile`
+en Ohio.
+
+> **Todo es gratuito y así debe quedar.**
+>
+> | Servicio | Plan | Tarjeta | Si se acaba lo gratis |
+> |---|---|---|---|
+> | Neon | Free, permanente | No la pide | Pausa la base hasta el mes siguiente. Nunca cobra. |
+> | Render | Free | **No la cargues nunca** | Suspende la aplicación hasta el mes siguiente |
+> | GitHub Actions | Gratis en repositorios públicos | No | No aplica |
+>
+> **Render:** si se pasa del tráfico o de los minutos de construcción del mes, cobra
+> un extra *solo si hay un medio de pago cargado*. Sin tarjeta, suspende en vez de
+> cobrar. Por eso: **nunca agregues una tarjeta en Render.** Render construye la imagen desde este repositorio con el `Dockerfile`
 y la describe `render.yaml`.
 
 ### 1. Base de datos en Neon
 
-1. Entrá a **https://neon.com** y creá una cuenta (podés usar la de GitHub).
+1. Entrá a **https://neon.com** y creá una cuenta (podés usar la de GitHub). No
+   pide tarjeta.
 2. **Create project**:
    - *Name:* `gestion-vacaciones`
    - *Postgres version:* **17** (la misma que en local)
@@ -241,7 +254,8 @@ horas. La base se apaga sola tras 5 minutos sin uso y despierta en segundos.
    git checkout main && git merge desarrollo && git push origin main
    ```
 2. Entrá a **https://render.com**, creá una cuenta con GitHub y dale acceso a
-   este repositorio.
+   este repositorio. **Si en algún momento te pide un medio de pago, no lo
+   cargues:** sin tarjeta, Render nunca puede cobrar.
 3. **New → Blueprint** → elegí el repositorio. Render lee `render.yaml`.
 4. Te pide las variables secretas: `DB_URL`, `DB_USUARIO`, `DB_PASSWORD`
    (las de Neon), `ADMIN_USERNAME` y `ADMIN_PASSWORD_INICIAL`.
@@ -287,13 +301,14 @@ Variables → New repository variable**: `URL_APLICACION` =
 |---|---|---|---|
 | **Ping con GitHub Actions** (lo armado) | Gratis: el repositorio es público | En el repositorio, sin otra cuenta. 60 pings diarios × 22 días ≈ 440 h de Render al mes, dentro de las 750 gratuitas | GitHub puede atrasar las tareas programadas en horas pico. Si el repositorio pasa **60 días sin actividad**, GitHub desactiva la tarea (se reactiva con un clic) |
 | **cron-job.org** o UptimeRobot | Gratis | Más puntual que GitHub | Otra cuenta que mantener, fuera del repositorio |
-| **Render Starter** (siempre encendido) | Pago mensual (desde unos 7 USD, verificá el precio actual) | Nunca duerme, más memoria y CPU | Cuesta todos los meses. Depender de un pago es justo lo que se quería evitar |
 | **No hacer nada** | Gratis | Nada que mantener | La primera apertura tras 15 minutos tarda alrededor de un minuto |
+
+**¿Y un plan siempre encendido?** Todos los que no duermen son pagos, y este
+proyecto se despliega **solo en servicios gratuitos**. Por eso se descartan.
 
 **Recomendación:** empezar con el ping de GitHub. Si en la práctica Brenda
 igual encuentra la aplicación dormida seguido, pasar a cron-job.org con la
-misma dirección. El plan pago solo tiene sentido si la oficina lo va a
-sostener.
+misma dirección. Sigue siendo gratis.
 
 ### 4. La base dormida (Neon)
 
@@ -306,6 +321,51 @@ Neon apaga el cómputo tras 5 minutos sin uso. La aplicación lo tolera:
   despertando"**. Si estaba consultando, la página se recarga sola. Si estaba
   guardando, se le avisa que no se guardó nada y nunca se reenvía el
   formulario.
+
+---
+
+## Usar el sistema desde otras computadoras o celulares
+
+### En producción (lo normal)
+
+Una vez desplegado en Render, **cualquier computadora o celular con internet**
+lo abre en `https://gestion-vacaciones-XXXX.onrender.com`. No hay nada que
+instalar.
+
+Para abrirlo como una aplicación desde el celular:
+
+- **Android (Chrome):** menú ⋮ → **Agregar a la pantalla principal**.
+- **iPhone (Safari):** botón Compartir → **Agregar a inicio**.
+
+### En la red de la oficina, desde tu computadora (solo para probar)
+
+1. Arrancá la aplicación: `./ejecutar-local.sh`.
+2. Averiguá la IP de tu computadora en la red:
+   ```bash
+   ip -4 -br addr | grep -v '^lo'
+   ```
+   Buscá la que empieza con `192.168.` o `10.`, por ejemplo `192.168.1.50`.
+3. Abrí el puerto 8080 en el firewall de Fedora, **solo mientras probás**:
+   ```bash
+   sudo firewall-cmd --add-port=8080/tcp      # se borra solo al reiniciar
+   ```
+   Si no funciona, puede que tu Wi-Fi esté en otra zona. Mirala con
+   `firewall-cmd --get-active-zones` y repetí el comando con `--zone=nombre`.
+4. En el celular, **conectado al mismo Wi-Fi**, abrí `http://192.168.1.50:8080`.
+5. Al terminar: `sudo firewall-cmd --remove-port=8080/tcp`.
+
+**Solo para pruebas:**
+
+- **Va por HTTP, sin cifrar:** cualquiera en ese Wi-Fi podría leer la
+  contraseña. Para uso real está Render, que es HTTPS.
+- **Tu computadora tiene que estar encendida** con la aplicación corriendo.
+- **Algunas redes** (Wi-Fi de invitados, redes corporativas) no dejan que los
+  dispositivos se vean entre sí.
+
+### Ver cómo queda en un celular, sin celular
+
+En Firefox o Chrome: **Ctrl+Shift+M** abre la vista adaptable. Elegí un modelo
+de celular o escribí 360 de ancho.
 
 ---
 

@@ -1,0 +1,61 @@
+# ===========================================================================
+#  Compila y corre TODAS las pruebas en cada push y en cada pull request.
+#
+#  Las pruebas levantan un PostgreSQL real con Testcontainers; las máquinas
+#  de GitHub ya traen Docker, así que no hace falta configurar nada.
+#  El repositorio es público: estos minutos no tienen costo.
+# ===========================================================================
+name: Pruebas
+
+on:
+  push:
+  pull_request:
+
+# Solo lectura: esta tarea no necesita escribir nada en el repositorio.
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    name: Compilar y correr las pruebas
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Bajar el código
+        uses: actions/checkout@v7
+
+      - name: Instalar Java 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Compilar y probar
+        run: ./mvnw -B verify
+
+  estilos:
+    name: La hoja de estilos está regenerada
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Bajar el código
+        uses: actions/checkout@v7
+
+      - name: Instalar Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Instalar Tailwind y HTMX (versiones exactas de package-lock.json)
+        run: npm ci
+
+      # Si alguien cambió clases en un .html y se olvidó de correr "npm run css",
+      # el archivo generado no coincide con el versionado y esta tarea falla.
+      - name: Regenerar y comparar
+        run: |
+          npm run css
+          npm run htmx
+          git diff --exit-code -- src/main/resources/static \
+            || { echo "::error::estilos.css o htmx.min.js no están al día. Corré: npm run css && npm run htmx"; exit 1; }
