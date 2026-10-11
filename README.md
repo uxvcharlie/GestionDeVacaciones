@@ -332,10 +332,40 @@ Una vez desplegado en Render, **cualquier computadora o celular con internet**
 lo abre en `https://gestion-vacaciones-XXXX.onrender.com`. No hay nada que
 instalar.
 
-Para abrirlo como una aplicación desde el celular:
+### Instalarlo como aplicación en el celular
 
-- **Android (Chrome):** menú ⋮ → **Agregar a la pantalla principal**.
-- **iPhone (Safari):** botón Compartir → **Agregar a inicio**.
+El sistema es una **aplicación instalable** (PWA): queda con su propio ícono
+(el rombo ◆), se abre a pantalla completa sin la barra del navegador y aparece
+en la lista de aplicaciones del teléfono. **No pasa por Play Store ni App
+Store, no cuesta nada y se actualiza sola**: cada vez que se despliega una
+versión nueva en Render, el celular la usa en la siguiente apertura.
+
+- **Android (Chrome):** abrí la dirección → menú ⋮ → **Instalar aplicación**
+  (en algunos celulares dice **Agregar a la pantalla principal** → **Instalar**).
+- **iPhone (Safari, obligatorio Safari):** abrí la dirección → botón
+  Compartir □↑ → **Agregar a inicio** → **Agregar**.
+
+Requisito: tiene que abrirse por **HTTPS**, o sea la dirección de Render. Por
+`http://192.168.x.x` (la red de la oficina) se ve igual, pero el celular **no**
+ofrece instalarla: los navegadores solo permiten instalar aplicaciones desde
+sitios seguros.
+
+Qué guarda el celular y qué no:
+
+- **No guarda ningún dato** de funcionarios, saldos ni solicitudes. Todo se
+  pide al servidor cada vez. Si el teléfono se pierde, no hay nada que robar
+  en él, y nunca se ve un saldo viejo.
+- Sí guarda los colores, el ícono y una pantalla de **"No hay conexión a
+  internet"** con un botón para reintentar, en vez del error del navegador.
+
+Archivos de la aplicación instalable:
+
+| Archivo | Para qué |
+|---|---|
+| `static/manifest.json` | Nombre, ícono, colores y pantalla completa |
+| `static/sw.js` | Service worker: pantalla sin conexión y copia de estilos |
+| `static/sin-conexion.html` | Lo que se ve sin internet |
+| `static/iconos/` | Íconos; se regeneran con `./scripts/generar-iconos.sh` |
 
 ### En la red de la oficina, desde tu computadora (solo para probar)
 

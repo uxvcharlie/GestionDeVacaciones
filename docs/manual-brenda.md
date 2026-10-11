@@ -1,7 +1,32 @@
 # Manual del Registro de Vacaciones
 
-Esta guía explica cómo usar el sistema, pantalla por pantalla. No hace falta
-instalar nada: se usa desde el navegador.
+Esta guía explica cómo usar el sistema, pantalla por pantalla. Se usa desde
+el navegador de la computadora o como aplicación en el celular.
+
+---
+
+## Instalar la aplicación en el celular
+
+Se hace una sola vez. Después queda un ícono morado con un rombo ◆, como
+cualquier otra aplicación.
+
+**En Android (Chrome):**
+
+1. Abrí Chrome y entrá a la dirección del sistema.
+2. Tocá los tres puntos ⋮ arriba a la derecha.
+3. Tocá **Instalar aplicación** (o **Agregar a la pantalla principal** y
+   después **Instalar**).
+
+**En iPhone (tiene que ser con Safari):**
+
+1. Abrí Safari y entrá a la dirección del sistema.
+2. Tocá el botón Compartir (el cuadrito con una flecha hacia arriba).
+3. Bajá y tocá **Agregar a inicio**, después **Agregar**.
+
+Desde entonces abrís el sistema tocando el ícono. Se ve a pantalla completa,
+sin la barra del navegador. Si alguna vez dice **"No hay conexión a
+internet"**, revisá los datos o el Wi-Fi y tocá **Volver a intentar**: no se
+pierde nada, porque todo queda guardado en el sistema, no en el teléfono.
 
 ---
 
