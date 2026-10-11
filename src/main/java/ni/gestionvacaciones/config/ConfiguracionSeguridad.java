@@ -55,6 +55,11 @@ public class ConfiguracionSeguridad {
             .authorizeHttpRequests(peticiones -> peticiones
                 // Archivos públicos: la hoja de estilos, el JavaScript, el ícono.
                 .requestMatchers("/css/**", "/js/**", "/favicon.ico").permitAll()
+                // Aplicación instalable: el celular pide estos archivos SIN la
+                // sesión iniciada (el ícono, por ejemplo, se descarga antes de
+                // ingresar). No contienen ningún dato de nadie.
+                .requestMatchers("/manifest.json", "/sw.js", "/sin-conexion.html",
+                        "/iconos/**").permitAll()
                 // La pantalla de ingreso tiene que ser pública, obviamente.
                 .requestMatchers("/ingresar").permitAll()
                 // Página de error propia.
@@ -164,6 +169,10 @@ public class ConfiguracionSeguridad {
                     "img-src 'self' data:",
                     "font-src 'self'",
                     "connect-src 'self'",
+                    // Manifiesto y service worker de la aplicación instalable:
+                    // también solo desde la propia aplicación.
+                    "manifest-src 'self'",
+                    "worker-src 'self'",
                     "form-action 'self'",
                     "frame-ancestors 'none'",
                     "base-uri 'self'",
