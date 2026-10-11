@@ -18,27 +18,49 @@
    --color-fondo  →  bg-fondo, text-fondo, border-fondo, ring-fondo...
    =========================================================================== */
 @theme {
-    /* --- Paleta obligatoria del proyecto --- */
-    --color-fondo:       #05060E;  /* fondo base de la aplicación           */
-    --color-superficie:  #12163A;  /* tarjetas, barra lateral, encabezados  */
-    --color-elevada:     #2E1A63;  /* bordes, separadores, filas alternas   */
-    --color-primario:    #5B2A86;  /* botones primarios y estados activos   */
-    --color-acento:      #B14AED;  /* anillo de foco, iconos, barras, badges*/
+    /* =======================================================================
+       Paleta del proyecto (tema claro). Los cuatro colores base son exactos:
+
+         #112B3C  azul marino   barra superior y texto principal
+         #205375  azul          botones primarios y estados activos
+         #F66B0E  naranja       acento: íconos, insignias, franja de la barra
+         #EFEFEF  gris claro    fondo de la aplicación
+
+       Lo demás son derivados de esos mismos cuatro, calculados para cumplir
+       WCAG AA (texto normal 4.5:1; bordes, foco y gráficos 3:1).
+       ======================================================================= */
+
+    /* --- Superficies --- */
+    --color-fondo:       #EFEFEF;  /* fondo de la aplicación                       */
+    --color-superficie:  #FFFFFF;  /* tarjetas y campos                            */
+    --color-elevada:     #DCE3E9;  /* separadores, filas alternas, hover (marino)  */
+
+    /* --- Barra superior --- */
+    --color-barra:        #112B3C; /* fondo de la barra                            */
+    --color-barra-texto:  #EFEFEF; /* 12.7:1 sobre la barra                        */
+    --color-barra-suave:  #A9BCCB; /*  7.5:1 sobre la barra (nombre de usuario)    */
+    --color-barra-borde:  #7C97AB; /*  4.8:1 sobre la barra (borde de botones)     */
+
+    /* --- Acciones --- */
+    --color-primario:    #205375;  /* botón primario: blanco encima da 8.2:1       */
+    --color-acento:      #F66B0E;  /* naranja: marino encima da 4.9:1              */
+
+    /* El naranja puro sobre fondo claro da 2.6:1: no alcanza ni para texto
+       (4.5) ni para el anillo de foco (3.0). Para esos dos usos va este naranja
+       más oscuro, del mismo matiz: 4.9:1 sobre #EFEFEF y 5.7:1 sobre blanco.
+       Sobre la barra marino sí se usa el naranja puro (4.9:1). */
+    --color-acento-texto: #AC4906;
+    --color-foco:         #AC4906;
 
     /* --- Texto --- */
-    --color-texto:       #F5F5F7;  /* 18.6:1 sobre el fondo                 */
-    --color-suave:       #A9AEC4;  /*  9.2:1 sobre el fondo                 */
+    --color-texto:       #112B3C;  /* 12.7:1 sobre #EFEFEF, 14.6:1 sobre blanco    */
+    --color-suave:       #42657C;  /*  5.4:1 sobre #EFEFEF,  6.2:1 sobre blanco    */
 
-    /* Variante clara del acento, SOLO para texto sobre tarjetas.
-       El acento puro (#B14AED) da 4.2:1 sobre #12163A y 3.5:1 sobre #2E1A63,
-       y eso no alcanza para texto normal según WCAG AA (pide 4.5:1).
-       Este tono mantiene el mismo matiz (278°) y sube a 6.6 / 5.7 / 4.7:1. */
-    --color-acento-texto: #C16FF1;
-
-    /* --- Estados: verdes, ámbar y rojos desaturados que armonizan --- */
-    --color-exito:  #6FD3A0;   /* 11.1:1 sobre el fondo */
-    --color-alerta: #E8B657;   /* 10.8:1 sobre el fondo */
-    --color-error:  #F08A84;   /*  8.4:1 sobre el fondo */
+    /* --- Estados (siempre con ícono y texto, nunca solo color) ---
+       Probados sobre su propio tinte al 10 %, que es como se usan en avisos. */
+    --color-exito:  #17643A;   /* 5.4:1 sobre su tinte */
+    --color-alerta: #7F5300;   /* 5.0:1 sobre su tinte */
+    --color-error:  #B42318;   /* 4.9:1 sobre su tinte */
 }
 
 /* ===========================================================================
@@ -63,25 +85,25 @@
                rounded-lg font-semibold text-base
                transition-colors cursor-pointer
                focus-visible:outline-none focus-visible:ring-2
-               focus-visible:ring-acento focus-visible:ring-offset-2
-               focus-visible:ring-offset-fondo;
+               focus-visible:ring-foco focus-visible:ring-offset-2
+               focus-visible:ring-offset-superficie;
     }
 
-    /* Fondo #5B2A86 con texto blanco: contraste 9.9:1. */
+    /* Fondo azul #205375 con texto blanco: contraste 8.2:1. */
     .boton-primario {
-        @apply bg-primario text-white hover:bg-[#6d3ba0] active:bg-[#4a2270];
+        @apply bg-primario text-white hover:bg-barra active:bg-[#0B1E2A];
     }
 
     .boton-secundario {
-        @apply bg-transparent text-texto border border-elevada hover:bg-elevada;
+        @apply bg-transparent text-texto border border-suave hover:bg-elevada;
     }
 
     /* --- Campos de formulario ------------------------------------------- */
     .campo {
         @apply block w-full min-h-11 px-4 py-2.5
-               rounded-lg bg-fondo text-texto placeholder:text-suave
-               border border-elevada
-               focus:outline-none focus:ring-2 focus:ring-acento focus:border-acento;
+               rounded-lg bg-superficie text-texto placeholder:text-suave
+               border border-suave
+               focus:outline-none focus:ring-2 focus:ring-foco focus:border-foco;
     }
 
     .campo-error {
@@ -117,7 +139,7 @@
     .enlace {
         @apply text-acento-texto underline underline-offset-4
                hover:text-acento rounded-sm
-               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento;
+               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco;
     }
 
     /* --- Enlace "saltar al contenido" (accesibilidad con teclado) -------- */
@@ -153,7 +175,7 @@
     .enlace-nav {
         @apply inline-flex items-center min-h-11 px-3 rounded-lg text-texto
                hover:bg-elevada
-               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento;
+               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco;
     }
 
     /* La sección actual se marca con aria-current="page", no solo con color. */
@@ -172,9 +194,9 @@
     .opcion {
         @apply flex items-center gap-3 min-h-14 px-4 py-3 rounded-lg
                border border-elevada bg-fondo cursor-pointer transition-colors
-               hover:border-acento
-               has-[:checked]:border-acento has-[:checked]:bg-elevada
-               has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-acento;
+               hover:border-foco
+               has-[:checked]:border-foco has-[:checked]:bg-elevada
+               has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-foco;
     }
 
     .insignia-anulada {
@@ -183,5 +205,34 @@
 
     .insignia-registrada {
         @apply border-exito/40 bg-exito/10 text-exito;
+    }
+}
+
+/* ===========================================================================
+   Barra superior (azul marino #112B3C)
+   Sobre el marino los colores claros cambian de papel: el texto es claro, el
+   foco y la sección actual van en naranja puro (4.9:1) y los botones llevan
+   borde claro. Una franja naranja abajo la separa del contenido.
+   =========================================================================== */
+@layer components {
+
+    .barra-superior {
+        @apply bg-barra text-barra-texto border-b-4 border-acento;
+    }
+
+    .barra-superior .enlace-nav {
+        @apply text-barra-texto hover:bg-white/10
+               focus-visible:ring-acento focus-visible:ring-offset-barra;
+    }
+
+    /* Sección actual: fondo más claro + subrayado naranja + negrita. */
+    .barra-superior .enlace-nav[aria-current="page"] {
+        @apply bg-white/15 text-white font-semibold
+               shadow-[inset_0_-3px_0_0_var(--color-acento)];
+    }
+
+    .barra-superior .boton-secundario {
+        @apply text-barra-texto border-barra-borde hover:bg-white/10
+               focus-visible:ring-acento focus-visible:ring-offset-barra;
     }
 }
