@@ -71,6 +71,14 @@ class FechasTextoSaludoTest {
     }
 
     @Test
+    fun `el verbo concuerda con la cantidad`() {
+        assertEquals("Se devuelve", Texto.verbo("1 día", "Se devuelve", "Se devuelven"))
+        assertEquals("Se devuelve", Texto.verbo("1 hora", "Se devuelve", "Se devuelven"))
+        assertEquals("Se devuelven", Texto.verbo("2 horas", "Se devuelve", "Se devuelven"))
+        assertEquals("Se devuelven", Texto.verbo("1 día y 4 horas", "Se devuelve", "Se devuelven"))
+    }
+
+    @Test
     fun `primer nombre y nombre de archivo`() {
         assertEquals("Brenda", Texto.primerNombre("Brenda Vásquez"))
         assertEquals("angela-perez-nunez", Texto.nombreDeArchivo("Ángela Pérez Núñez"))

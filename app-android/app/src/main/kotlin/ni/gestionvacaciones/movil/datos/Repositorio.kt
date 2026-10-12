@@ -343,7 +343,9 @@ class Repositorio(
         val j = parametrosActuales().horasPorJornada
         anotar(
             AccionBitacora.SOLICITUD_ANULADA,
-            "${f.nombreCompleto} · $descripcion · Se devolvieron ${s.tipo.formatear(s.minutos, j)} · Motivo: $motivoLimpio",
+            s.tipo.formatear(s.minutos, j).let { devuelto ->
+                "${f.nombreCompleto} · $descripcion · ${Texto.verbo(devuelto, "Se devolvió", "Se devolvieron")} $devuelto · Motivo: $motivoLimpio"
+            },
         )
         cambio
     }
@@ -362,8 +364,12 @@ class Repositorio(
         val m = revisado.minutosConSigno
         anotar(
             AccionBitacora.SALDO_AJUSTADO,
-            "${f.nombreCompleto} · ${if (m > 0) "Se sumaron" else "Se restaron"} " +
-                "${ConversorTiempo.formatear(Math.abs(m), j)} · Saldo: ${ConversorTiempo.formatear(cambio.saldoAntes, j)}" +
+            "${f.nombreCompleto} · " +
+                ConversorTiempo.formatear(Math.abs(m), j).let { cuanto ->
+                    if (m > 0) "${Texto.verbo(cuanto, "Se sumó", "Se sumaron")} $cuanto"
+                    else "${Texto.verbo(cuanto, "Se restó", "Se restaron")} $cuanto"
+                } +
+                " · Saldo: ${ConversorTiempo.formatear(cambio.saldoAntes, j)}" +
                 " → ${ConversorTiempo.formatear(cambio.saldoDespues, j)} · Motivo: ${revisado.motivo}",
         )
         if (revisado.quedaNegativo) {

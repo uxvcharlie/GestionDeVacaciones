@@ -34,6 +34,13 @@ object Texto {
     /** "1 funcionario", "3 funcionarios": nunca "1 funcionarios". */
     fun cantidad(n: Int, singular: String, plural: String): String = if (n == 1) "1 $singular" else "$n $plural"
 
+    /**
+     * Concordancia del verbo con una cantidad ya escrita:
+     * "Se devuelve 1 día", pero "Se devuelven 2 horas" y "Se devuelven 1 día y 4 horas".
+     */
+    fun verbo(cantidad: String, singular: String, plural: String): String =
+        if (Regex("^1 (día|hora|minuto)$").matches(cantidad)) singular else plural
+
     /** "Ángela Pérez Núñez" → "angela-perez-nunez", para nombres de archivo. */
     fun nombreDeArchivo(nombre: String): String {
         val limpio = normalizar(nombre).replace(Regex("[^a-z0-9]+"), "-").trim('-')

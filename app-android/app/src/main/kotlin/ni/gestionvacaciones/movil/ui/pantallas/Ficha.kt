@@ -31,6 +31,7 @@ import ni.gestionvacaciones.movil.dominio.AccionBitacora
 import ni.gestionvacaciones.movil.dominio.ConversorTiempo
 import ni.gestionvacaciones.movil.dominio.EstadoSolicitud
 import ni.gestionvacaciones.movil.dominio.Fechas
+import ni.gestionvacaciones.movil.dominio.Texto
 import ni.gestionvacaciones.movil.dominio.TipoSolicitud
 import ni.gestionvacaciones.movil.reporte.FormatoReporte
 import ni.gestionvacaciones.movil.reporte.Reportes
@@ -252,7 +253,7 @@ private fun DialogoAnular(f: FuncionarioEntidad, s: SolicitudEntidad, jornada: I
     DialogoConfirmacion(
         titulo = "¿Anular esta solicitud?",
         texto = "${s.tipo.etiqueta} de ${f.nombreCompleto} ${Fechas.rango(s.fechaInicio, s.fechaFin)}. " +
-            "Se devuelven ${s.tipo.formatear(s.minutos, jornada)} a su saldo. " +
+            s.tipo.formatear(s.minutos, jornada).let { "${Texto.verbo(it, "Se devuelve", "Se devuelven")} $it a su saldo. " } +
             "La solicitud no se borra: queda en el historial como anulada.",
         confirmar = "Anular solicitud",
         peligroso = true,
