@@ -13,6 +13,12 @@
 @source "../resources/templates";
 @source "../resources/static/js";
 
+/* La app de Android (app-android/, en Kotlin) vive en el mismo repositorio.
+   Tailwind 4 revisa todos los archivos del proyecto buscando nombres de
+   clases, y en el código de la app "encuentra" palabras como filter, outline
+   o table, generando clases que la web no usa. Por eso se excluye. */
+@source not "../../../app-android";
+
 /* ===========================================================================
    Paleta. Cada color acá se convierte en clases de Tailwind:
    --color-fondo  →  bg-fondo, text-fondo, border-fondo, ring-fondo...
