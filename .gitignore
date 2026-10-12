@@ -40,6 +40,8 @@ app-android/build/
 app-android/app/build/
 # Ruta del SDK en cada computadora: no es igual en todas.
 app-android/local.properties
+# Los APK se generan; no se versionan.
+*.apk
 
 # ---------------------------------------------------------------------------
 # Herramientas de interfaz (Tailwind se instala local, no se versiona)
