@@ -1,0 +1,377 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "25e1651acd54c1e6892f0310694967bb",
+    "entities": [
+      {
+        "tableName": "funcionario",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `nombre_completo` TEXT NOT NULL, `cargo` TEXT, `area_o_dependencia` TEXT, `fecha_ingreso` INTEGER, `saldo_minutos` INTEGER NOT NULL, `activo` INTEGER NOT NULL, `creado_en` INTEGER NOT NULL, `actualizado_en` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nombreCompleto",
+            "columnName": "nombre_completo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cargo",
+            "columnName": "cargo",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "areaODependencia",
+            "columnName": "area_o_dependencia",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "fechaIngreso",
+            "columnName": "fecha_ingreso",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "saldoMinutos",
+            "columnName": "saldo_minutos",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "activo",
+            "columnName": "activo",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "creadoEn",
+            "columnName": "creado_en",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "actualizadoEn",
+            "columnName": "actualizado_en",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_funcionario_activo",
+            "unique": false,
+            "columnNames": [
+              "activo"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_funcionario_activo` ON `${TABLE_NAME}` (`activo`)"
+          }
+        ]
+      },
+      {
+        "tableName": "solicitud",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `funcionario_id` INTEGER NOT NULL, `tipo` TEXT NOT NULL, `fecha_inicio` INTEGER NOT NULL, `fecha_fin` INTEGER NOT NULL, `minutos` INTEGER NOT NULL, `motivo` TEXT, `estado` TEXT NOT NULL, `creado_en` INTEGER NOT NULL, `anulado_en` INTEGER, `motivo_anulacion` TEXT, FOREIGN KEY(`funcionario_id`) REFERENCES `funcionario`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "funcionarioId",
+            "columnName": "funcionario_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tipo",
+            "columnName": "tipo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fechaInicio",
+            "columnName": "fecha_inicio",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fechaFin",
+            "columnName": "fecha_fin",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minutos",
+            "columnName": "minutos",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "motivo",
+            "columnName": "motivo",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "estado",
+            "columnName": "estado",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "creadoEn",
+            "columnName": "creado_en",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "anuladoEn",
+            "columnName": "anulado_en",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "motivoAnulacion",
+            "columnName": "motivo_anulacion",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_solicitud_funcionario_id",
+            "unique": false,
+            "columnNames": [
+              "funcionario_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_solicitud_funcionario_id` ON `${TABLE_NAME}` (`funcionario_id`)"
+          },
+          {
+            "name": "index_solicitud_fecha_inicio_fecha_fin",
+            "unique": false,
+            "columnNames": [
+              "fecha_inicio",
+              "fecha_fin"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_solicitud_fecha_inicio_fecha_fin` ON `${TABLE_NAME}` (`fecha_inicio`, `fecha_fin`)"
+          },
+          {
+            "name": "index_solicitud_estado",
+            "unique": false,
+            "columnNames": [
+              "estado"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_solicitud_estado` ON `${TABLE_NAME}` (`estado`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "funcionario",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "funcionario_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "movimiento_saldo",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `funcionario_id` INTEGER NOT NULL, `solicitud_id` INTEGER, `tipo` TEXT NOT NULL, `minutos` INTEGER NOT NULL, `saldo_resultante` INTEGER NOT NULL, `descripcion` TEXT, `creado_en` INTEGER NOT NULL, FOREIGN KEY(`funcionario_id`) REFERENCES `funcionario`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`solicitud_id`) REFERENCES `solicitud`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "funcionarioId",
+            "columnName": "funcionario_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "solicitudId",
+            "columnName": "solicitud_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "tipo",
+            "columnName": "tipo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minutos",
+            "columnName": "minutos",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "saldoResultante",
+            "columnName": "saldo_resultante",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "descripcion",
+            "columnName": "descripcion",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "creadoEn",
+            "columnName": "creado_en",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_movimiento_saldo_funcionario_id",
+            "unique": false,
+            "columnNames": [
+              "funcionario_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_movimiento_saldo_funcionario_id` ON `${TABLE_NAME}` (`funcionario_id`)"
+          },
+          {
+            "name": "index_movimiento_saldo_solicitud_id",
+            "unique": false,
+            "columnNames": [
+              "solicitud_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_movimiento_saldo_solicitud_id` ON `${TABLE_NAME}` (`solicitud_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "funcionario",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "funcionario_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "solicitud",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "solicitud_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "bitacora",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `accion` TEXT NOT NULL, `detalle` TEXT, `creado_en` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "accion",
+            "columnName": "accion",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "detalle",
+            "columnName": "detalle",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "creadoEn",
+            "columnName": "creado_en",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_bitacora_creado_en",
+            "unique": false,
+            "columnNames": [
+              "creado_en"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_bitacora_creado_en` ON `${TABLE_NAME}` (`creado_en`)"
+          }
+        ]
+      },
+      {
+        "tableName": "parametro",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`clave` TEXT NOT NULL, `valor` TEXT NOT NULL, PRIMARY KEY(`clave`))",
+        "fields": [
+          {
+            "fieldPath": "clave",
+            "columnName": "clave",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "valor",
+            "columnName": "valor",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "clave"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '25e1651acd54c1e6892f0310694967bb')"
+    ]
+  }
+}

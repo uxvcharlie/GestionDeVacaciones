@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nombre que aparece debajo del ícono. Corto para que no se corte. -->
+    <string name="nombre_app">Vacaciones</string>
+</resources>

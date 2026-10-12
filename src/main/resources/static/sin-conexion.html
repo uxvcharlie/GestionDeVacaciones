@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--
+  Pantalla que muestra la aplicación instalada cuando el celular no tiene
+  internet. Es un archivo fijo (no pasa por el servidor) porque justamente se
+  usa cuando el servidor no se puede alcanzar. No tiene JavaScript: el botón
+  es un enlace común que vuelve a intentar.
+-->
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#112B3C">
+    <title>Sin conexión · Registro de Vacaciones</title>
+    <link rel="stylesheet" href="/css/estilos.css">
+</head>
+<body class="min-h-screen bg-fondo text-texto">
+<main class="min-h-screen flex items-center justify-center px-4 py-10">
+    <div class="w-full max-w-md text-center">
+        <span class="text-alerta text-5xl block mb-4" aria-hidden="true">⚠</span>
+        <h1 class="text-2xl font-semibold mb-3">No hay conexión a internet</h1>
+        <p class="text-suave mb-8">
+            Revisá que el celular tenga datos o Wi-Fi y volvé a intentar.
+            Nada de lo que ya estaba registrado se perdió: todo queda guardado
+            en el sistema, no en este teléfono.
+        </p>
+        <a href="/" class="boton-primario w-full">Volver a intentar</a>
+    </div>
+</main>
+</body>
+</html>

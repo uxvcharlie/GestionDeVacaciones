@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Un calendario con una marca de "registrado", en la paleta de la web:
+  hoja gris claro sobre marino, franja naranja y marca en azul.
+  Lienzo de 108×108; lo importante queda dentro del círculo central de 66
+  para que ninguna forma de ícono lo recorte.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Hoja del calendario -->
+    <path
+        android:fillColor="#EFEFEF"
+        android:pathData="M37,33 H71 A6,6 0 0 1 77,39 V73 A6,6 0 0 1 71,79 H37 A6,6 0 0 1 31,73 V39 A6,6 0 0 1 37,33 Z" />
+    <!-- Franja superior en el naranja (4.9:1 sobre el marino) -->
+    <path
+        android:fillColor="#F66B0E"
+        android:pathData="M37,33 H71 A6,6 0 0 1 77,39 V47 H31 V39 A6,6 0 0 1 37,33 Z" />
+    <!-- Anillos -->
+    <path
+        android:fillColor="#EFEFEF"
+        android:pathData="M42,27 H46 V39 H42 Z M62,27 H66 V39 H62 Z" />
+    <!-- Marca de registrado -->
+    <path
+        android:strokeColor="#205375"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M42,63 L50,71 L66,55" />
+</vector>

@@ -23,7 +23,7 @@
             <li th:each="e : ${encontrados}">
                 <a th:href="@{/empleados/{id}(id=${e.id})}"
                    class="flex items-center justify-between gap-3 min-h-14 px-2 py-2 rounded-lg
-                          hover:bg-elevada focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-acento">
+                          hover:bg-elevada focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foco">
                     <span class="min-w-0">
                         <span class="block font-medium break-words" th:text="${e.nombreCompleto}">María González</span>
                         <span class="block text-suave text-sm"

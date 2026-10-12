@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!--
+    Versión "maskable": Android la recorta en círculo, gota o cuadrado según el
+    celular. Por eso el fondo llega hasta los bordes y el rombo queda dentro de
+    la zona segura (el círculo central del 80 %), para que nunca se corte.
+  -->
+  <rect width="512" height="512" fill="#112B3C"/>
+  <path d="M256 116 L396 256 L256 396 L116 256 Z" fill="#F66B0E"/>
+</svg>
