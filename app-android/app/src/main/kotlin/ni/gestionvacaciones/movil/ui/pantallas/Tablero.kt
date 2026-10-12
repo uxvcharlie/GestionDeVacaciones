@@ -44,10 +44,12 @@ import ni.gestionvacaciones.movil.ui.LocalContenedor
 import ni.gestionvacaciones.movil.ui.Rutas
 import ni.gestionvacaciones.movil.ui.componentes.ALTO_MINIMO
 import ni.gestionvacaciones.movil.ui.componentes.Aviso
+import ni.gestionvacaciones.movil.ui.componentes.BotonBarra
 import ni.gestionvacaciones.movil.ui.componentes.BotonPrimario
 import ni.gestionvacaciones.movil.ui.componentes.BotonSecundario
 import ni.gestionvacaciones.movil.ui.componentes.BotonTexto
 import ni.gestionvacaciones.movil.ui.componentes.Campo
+import ni.gestionvacaciones.movil.ui.componentes.Encabezado
 import ni.gestionvacaciones.movil.ui.componentes.EstadoVacio
 import ni.gestionvacaciones.movil.ui.componentes.Insignia
 import ni.gestionvacaciones.movil.ui.componentes.Separador
@@ -83,16 +85,19 @@ fun PantallaTablero(rutas: Rutas) {
     val mes = YearMonth.from(local)
     val resumen by remember(mes) { repo.resumenDelMes(mes) }.collectAsStateWithLifecycle(emptyMap())
 
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+    Column(Modifier.fillMaxSize()) {
+        Encabezado("Registro de Vacaciones", alVolver = null) {
+            BotonBarra("Bloquear", { sesion.bloquear() })
+        }
         Column(
-            Modifier.widthIn(max = 640.dp).fillMaxWidth().padding(horizontal = 16.dp, vertical = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Row(verticalAlignment = Alignment.Top) {
-                Column(Modifier.weight(1f)) {
+            Column(
+                Modifier.widthIn(max = 640.dp).fillMaxWidth().padding(horizontal = 16.dp, vertical = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Column {
                     Text(
                         Saludo.para(local.toLocalTime()) + (Texto.primerNombre(p.nombreUsuaria).takeIf { it.isNotEmpty() }?.let { ", $it" } ?: ""),
                         style = MaterialTheme.typography.headlineMedium,
@@ -101,47 +106,46 @@ fun PantallaTablero(rutas: Rutas) {
                     )
                     TextoSuave("Hoy es " + Fechas.fechaLarga(local.toLocalDate()))
                 }
-                BotonTexto("Bloquear", { sesion.bloquear() })
+
+                val lista = funcionarios
+                val hayFuncionarios = !lista.isNullOrEmpty()
+
+                if (hayFuncionarios) {
+                    RecordatorioRespaldo(p, ahora, rutas)
+                }
+
+                BotonPrimario(
+                    "Registrar solicitud",
+                    { rutas.solicitud() },
+                    Modifier.fillMaxWidth().heightIn(min = 64.dp),
+                    icono = "＋",
+                )
+
+                if (lista != null && lista.isEmpty()) {
+                    EstadoVacio(
+                        "Todavía no hay funcionarios registrados",
+                        "Empezá agregando a la primera persona con su saldo. Después vas a poder registrarle solicitudes.",
+                        "Agregar el primero",
+                    ) { rutas.nuevoFuncionario() }
+                }
+
+                if (lista != null && hayFuncionarios) {
+                    Buscador(lista, p.horasPorJornada, rutas)
+                    ResumenDelMes(mes, lista.count { it.activo }, resumen, p.horasPorJornada, rutas)
+                    UltimasSolicitudes(recientes, p.horasPorJornada, rutas)
+                }
+
+                Separador()
+                Subtitulo("Más opciones")
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    BotonSecundario("Funcionarios", { rutas.funcionarios() }, Modifier.fillMaxWidth(), icono = "👥")
+                    BotonSecundario("Reportes en Excel o CSV", { rutas.reportes() }, Modifier.fillMaxWidth(), icono = "📊")
+                    BotonSecundario("Respaldo de los datos", { rutas.respaldo() }, Modifier.fillMaxWidth(), icono = "💾")
+                    BotonSecundario("Bitácora", { rutas.bitacora() }, Modifier.fillMaxWidth(), icono = "🗒")
+                    BotonSecundario("Ajustes", { rutas.ajustes() }, Modifier.fillMaxWidth(), icono = "⚙")
+                }
+                Spacer(Modifier.heightIn(min = 16.dp))
             }
-
-            val lista = funcionarios
-            val hayFuncionarios = !lista.isNullOrEmpty()
-
-            if (hayFuncionarios) {
-                RecordatorioRespaldo(p, ahora, rutas)
-            }
-
-            BotonPrimario(
-                "Registrar solicitud",
-                { rutas.solicitud() },
-                Modifier.fillMaxWidth().heightIn(min = 64.dp),
-                icono = "＋",
-            )
-
-            if (lista != null && lista.isEmpty()) {
-                EstadoVacio(
-                    "Todavía no hay funcionarios registrados",
-                    "Empezá agregando a la primera persona con su saldo. Después vas a poder registrarle solicitudes.",
-                    "Agregar el primero",
-                ) { rutas.nuevoFuncionario() }
-            }
-
-            if (lista != null && hayFuncionarios) {
-                Buscador(lista, p.horasPorJornada, rutas)
-                ResumenDelMes(mes, lista.count { it.activo }, resumen, p.horasPorJornada, rutas)
-                UltimasSolicitudes(recientes, p.horasPorJornada, rutas)
-            }
-
-            Separador()
-            Subtitulo("Más opciones")
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                BotonSecundario("Funcionarios", { rutas.funcionarios() }, Modifier.fillMaxWidth(), icono = "👥")
-                BotonSecundario("Reportes en Excel o CSV", { rutas.reportes() }, Modifier.fillMaxWidth(), icono = "📊")
-                BotonSecundario("Respaldo de los datos", { rutas.respaldo() }, Modifier.fillMaxWidth(), icono = "💾")
-                BotonSecundario("Bitácora", { rutas.bitacora() }, Modifier.fillMaxWidth(), icono = "🗒")
-                BotonSecundario("Ajustes", { rutas.ajustes() }, Modifier.fillMaxWidth(), icono = "⚙")
-            }
-            Spacer(Modifier.heightIn(min = 16.dp))
         }
     }
 }

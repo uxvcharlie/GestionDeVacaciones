@@ -86,7 +86,7 @@ fun PantallaAjuste(rutas: Rutas, id: Long) {
                         .selectable(selected = operacion == op, role = Role.RadioButton, onClick = { operacion = op; error = null }),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    RadioButton(operacion == op, onClick = null, colors = RadioButtonDefaults.colors(selectedColor = Paleta.Acento))
+                    RadioButton(operacion == op, onClick = null, colors = RadioButtonDefaults.colors(selectedColor = Paleta.Primario, unselectedColor = Paleta.Suave))
                     Text(if (op == OperacionAjuste.SUMAR) "＋ Sumar" else "− Restar", Modifier.padding(start = 8.dp), color = Paleta.Texto)
                 }
             }
@@ -109,7 +109,7 @@ fun PantallaAjuste(rutas: Rutas, id: Long) {
                     .toggleable(value = autorizar, role = Role.Checkbox, onValueChange = { autorizar = it }),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Checkbox(autorizar, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = Paleta.Acento))
+                Checkbox(autorizar, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = Paleta.Primario, uncheckedColor = Paleta.Suave))
                 Text("Autorizo que el saldo quede en negativo.", Modifier.weight(1f).padding(start = 8.dp), color = Paleta.Texto)
             }
         }

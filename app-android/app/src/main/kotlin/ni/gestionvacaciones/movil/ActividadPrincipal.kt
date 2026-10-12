@@ -38,10 +38,11 @@ class ActividadPrincipal : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Barras del sistema oscuras con íconos claros, a juego con el fondo.
+        // Arriba, íconos claros sobre la franja marino; abajo, íconos oscuros
+        // sobre el fondo gris claro.
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
         )
         super.onCreate(savedInstanceState)
         setContent {

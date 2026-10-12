@@ -78,7 +78,7 @@ fun PantallaFuncionarios(rutas: Rutas) {
                 .toggleable(value = verBajas, role = Role.Checkbox, onValueChange = { verBajas = it }),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Checkbox(checked = verBajas, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = Paleta.Acento))
+            Checkbox(checked = verBajas, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = Paleta.Primario, uncheckedColor = Paleta.Suave))
             Text("Mostrar también a los dados de baja", Modifier.weight(1f).padding(start = 8.dp), color = Paleta.Texto)
         }
 

@@ -21,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -36,12 +39,17 @@ import ni.gestionvacaciones.movil.ui.tema.Paleta
  */
 @Composable
 fun Encabezado(titulo: String, alVolver: (() -> Unit)?, acciones: @Composable () -> Unit = {}) {
+    // Barra marino con una franja naranja abajo, igual que la barra de la web.
     Row(
         Modifier
             .fillMaxWidth()
-            .background(Paleta.Superficie)
+            .background(Paleta.Barra)
+            .drawBehind {
+                val alto = 3.dp.toPx()
+                drawRect(Paleta.Acento, topLeft = Offset(0f, size.height - alto), size = Size(size.width, alto))
+            }
             .heightIn(min = 60.dp)
-            .padding(horizontal = 4.dp),
+            .padding(start = 4.dp, end = 12.dp, bottom = 3.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (alVolver != null) {
@@ -49,7 +57,7 @@ fun Encabezado(titulo: String, alVolver: (() -> Unit)?, acciones: @Composable ()
                 onClick = alVolver,
                 modifier = Modifier.size(52.dp).semantics { contentDescription = "Volver" },
             ) {
-                Text("←", fontSize = 24.sp, color = Paleta.Texto, modifier = Modifier.clearAndSetSemantics { })
+                Text("←", fontSize = 24.sp, color = Paleta.BarraTexto, modifier = Modifier.clearAndSetSemantics { })
             }
         } else {
             Spacer(Modifier.size(16.dp))
@@ -58,7 +66,7 @@ fun Encabezado(titulo: String, alVolver: (() -> Unit)?, acciones: @Composable ()
             titulo,
             modifier = Modifier.weight(1f).semantics { heading() },
             style = MaterialTheme.typography.titleLarge,
-            color = Paleta.Texto,
+            color = Paleta.BarraTexto,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

@@ -295,7 +295,7 @@ fun PantallaSolicitud(rutas: Rutas, funcionarioInicial: Long?) {
                             .toggleable(value = autorizar, role = Role.Checkbox, onValueChange = { autorizar = it }),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Checkbox(autorizar, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = Paleta.Acento))
+                        Checkbox(autorizar, onCheckedChange = null, colors = CheckboxDefaults.colors(checkedColor = Paleta.Primario, uncheckedColor = Paleta.Suave))
                         Text(
                             "Autorizo registrar esta solicitud aunque el saldo quede en negativo.",
                             Modifier.weight(1f).padding(start = 8.dp),
@@ -353,14 +353,16 @@ private fun OpcionTipo(tipo: TipoSolicitud, seleccionado: Boolean, alElegir: () 
     Surface(
         shape = RoundedCornerShape(12.dp),
         color = if (seleccionado) Paleta.Elevada else Paleta.Superficie,
-        border = BorderStroke(if (seleccionado) 2.dp else 1.dp, if (seleccionado) Paleta.Acento else Paleta.Elevada),
+        // Igual que la web: la opción elegida lleva borde de foco y fondo; el
+        // círculo del radio también cambia, así no depende solo del color.
+        border = BorderStroke(if (seleccionado) 2.dp else 1.dp, if (seleccionado) Paleta.Foco else Paleta.Suave),
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 60.dp)
             .selectable(selected = seleccionado, role = Role.RadioButton, onClick = alElegir),
     ) {
         Row(Modifier.padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(selected = seleccionado, onClick = null, colors = RadioButtonDefaults.colors(selectedColor = Paleta.Acento))
+            RadioButton(selected = seleccionado, onClick = null, colors = RadioButtonDefaults.colors(selectedColor = Paleta.Primario, unselectedColor = Paleta.Suave))
             Text(tipo.icono, Modifier.padding(horizontal = 10.dp), style = MaterialTheme.typography.titleLarge)
             Column {
                 Text(tipo.etiqueta, style = MaterialTheme.typography.titleMedium, color = Paleta.Texto)

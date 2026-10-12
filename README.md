@@ -528,6 +528,8 @@ Neon, sin esperar a que nada despierte y gratis para siempre.
 - **Tu especificación prohibía SQLite** como solución final. Esa regla tenía
   sentido en un servidor; en una app sin internet la base tiene que vivir en el
   teléfono, y Android usa SQLite por dentro. Es la única excepción.
+- **Se ve igual que la web:** la misma paleta clara (azul marino, azul,
+  naranja y gris claro), con los mismos contrastes verificados.
 - Todo lo demás es igual: minutos enteros, saldo único para los tres tipos,
   negativo solo con autorización y motivo, anulación con reversión, ajuste
   manual con motivo, baja lógica, bitácora, reportes en Excel y CSV, fechas

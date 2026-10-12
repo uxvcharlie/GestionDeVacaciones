@@ -3,11 +3,18 @@ package ni.gestionvacaciones.movil.ui
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -89,25 +96,31 @@ fun RaizApp() {
     CompositionLocalProvider(LocalAvisar provides avisar) {
         Scaffold(
             containerColor = Paleta.Fondo,
-            contentWindowInsets = WindowInsets.safeDrawing,
+            // Arriba no se deja margen: lo ocupa la franja marino de abajo.
+            contentWindowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
             snackbarHost = {
                 SnackbarHost(snackbar) {
                     Snackbar(
                         it,
-                        containerColor = Paleta.Elevada,
-                        contentColor = Paleta.Texto,
-                        dismissActionContentColor = Paleta.Texto,
+                        containerColor = Paleta.Barra,
+                        contentColor = Paleta.BarraTexto,
+                        dismissActionContentColor = Paleta.BarraTexto,
                     )
                 }
             },
         ) { margenes ->
-            Box(Modifier.padding(margenes).fillMaxSize()) {
-                val p = parametros
-                when {
-                    p == null -> Unit // un instante mientras se abre la base de datos
-                    !tienePin -> PantallaPrimerUso(alTerminar = { tienePin = true })
-                    !desbloqueada -> PantallaDesbloqueo(p.nombreUsuaria)
-                    else -> NavegacionPrincipal()
+            Column(Modifier.padding(margenes).fillMaxSize()) {
+                // La barra de estado del celular (hora, batería) se dibuja sobre
+                // marino, así se une con la barra superior de cada pantalla.
+                Spacer(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.safeDrawing).background(Paleta.Barra))
+                Box(Modifier.weight(1f).fillMaxWidth()) {
+                    val p = parametros
+                    when {
+                        p == null -> Unit // un instante mientras se abre la base de datos
+                        !tienePin -> PantallaPrimerUso(alTerminar = { tienePin = true })
+                        !desbloqueada -> PantallaDesbloqueo(p.nombreUsuaria)
+                        else -> NavegacionPrincipal()
+                    }
                 }
             }
         }

@@ -76,8 +76,10 @@ fun SelectorFecha(
                     containerColor = Paleta.Superficie,
                     selectedDayContainerColor = Paleta.Primario,
                     selectedDayContentColor = androidx.compose.ui.graphics.Color.White,
-                    todayDateBorderColor = Paleta.Acento,
+                    todayDateBorderColor = Paleta.Foco,
                     todayContentColor = Paleta.AcentoTexto,
+                    selectedYearContainerColor = Paleta.Primario,
+                    selectedYearContentColor = androidx.compose.ui.graphics.Color.White,
                 ),
             )
         }

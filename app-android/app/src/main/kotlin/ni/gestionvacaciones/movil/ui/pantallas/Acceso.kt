@@ -261,8 +261,8 @@ fun TecladoPin(
                 Box(
                     Modifier
                         .size(20.dp)
-                        .background(if (lleno) Paleta.Acento else Paleta.Fondo, CircleShape)
-                        .border(2.dp, if (lleno) Paleta.Acento else Paleta.Suave, CircleShape),
+                        .background(if (lleno) Paleta.Primario else Paleta.Superficie, CircleShape)
+                        .border(2.dp, if (lleno) Paleta.Primario else Paleta.Suave, CircleShape),
                 )
             }
         }
@@ -294,7 +294,7 @@ private fun TeclaPin(texto: String, habilitada: Boolean, descripcion: String = t
         shape = CircleShape,
         color = if (habilitada) Paleta.Superficie else Paleta.Fondo,
         contentColor = if (habilitada) Paleta.Texto else Paleta.Suave,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Paleta.Elevada),
+        border = androidx.compose.foundation.BorderStroke(1.dp, if (habilitada) Paleta.Suave else Paleta.Elevada),
         modifier = Modifier.size(76.dp).semantics {
             contentDescription = descripcion
             role = Role.Button

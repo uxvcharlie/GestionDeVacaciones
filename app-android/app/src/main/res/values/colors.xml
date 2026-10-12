@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- La misma paleta clara que la web. -->
 <resources>
-    <color name="fondo">#FF05060E</color>
-    <color name="superficie">#FF12163A</color>
-    <color name="acento">#FFB14AED</color>
+    <color name="fondo">#FFEFEFEF</color>
+    <color name="barra">#FF112B3C</color>
+    <color name="acento">#FFF66B0E</color>
 </resources>

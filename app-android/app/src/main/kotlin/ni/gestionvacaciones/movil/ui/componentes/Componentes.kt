@@ -80,7 +80,8 @@ fun BotonSecundario(texto: String, alTocar: () -> Unit, modifier: Modifier = Mod
         enabled = habilitado,
         modifier = modifier.heightIn(min = ALTO_MINIMO),
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, Paleta.Elevada),
+        // Borde en el azul grisáceo "suave": 5.4:1, se distingue del fondo.
+        border = BorderStroke(1.dp, if (habilitado) Paleta.Suave else Paleta.Elevada),
         colors = ButtonDefaults.outlinedButtonColors(contentColor = Paleta.Texto),
         contentPadding = PaddingValues(horizontal = 18.dp, vertical = 12.dp),
     ) { ContenidoBoton(texto, icono) }
@@ -96,6 +97,19 @@ fun BotonPeligro(texto: String, alTocar: () -> Unit, modifier: Modifier = Modifi
         border = BorderStroke(1.dp, Paleta.Error.copy(alpha = 0.6f)),
         colors = ButtonDefaults.outlinedButtonColors(contentColor = Paleta.Error),
     ) { ContenidoBoton(texto, icono) }
+}
+
+/** Botón para la barra superior marino: texto claro y borde claro, como en la web. */
+@Composable
+fun BotonBarra(texto: String, alTocar: () -> Unit, modifier: Modifier = Modifier) {
+    OutlinedButton(
+        onClick = alTocar,
+        modifier = modifier.heightIn(min = 44.dp),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, Paleta.BarraBorde),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = Paleta.BarraTexto),
+        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp),
+    ) { Text(texto, style = MaterialTheme.typography.labelLarge) }
 }
 
 @Composable
@@ -203,7 +217,7 @@ fun Insignia(texto: String, icono: String, color: Color) {
 @Composable
 fun EstadoVacio(titulo: String, explicacion: String, accion: String? = null, alTocar: (() -> Unit)? = null) {
     Tarjeta {
-        Text("◇", modifier = Modifier.clearAndSetSemantics { }, color = Paleta.Acento, fontSize = 28.sp)
+        Text("◇", modifier = Modifier.clearAndSetSemantics { }, color = Paleta.AcentoTexto, fontSize = 28.sp)
         Subtitulo(titulo)
         TextoSuave(explicacion)
         if (accion != null && alTocar != null) {
@@ -279,13 +293,15 @@ fun CampoNumero(
 
 @Composable
 fun coloresCampo() = OutlinedTextFieldDefaults.colors(
-    focusedBorderColor = Paleta.Acento,
-    unfocusedBorderColor = Paleta.Elevada,
-    focusedLabelColor = Paleta.AcentoTexto,
+    focusedBorderColor = Paleta.Foco,
+    unfocusedBorderColor = Paleta.Suave,
+    focusedLabelColor = Paleta.Foco,
     unfocusedLabelColor = Paleta.Suave,
-    cursorColor = Paleta.Acento,
-    focusedContainerColor = Paleta.Fondo,
-    unfocusedContainerColor = Paleta.Fondo,
+    cursorColor = Paleta.Foco,
+    focusedContainerColor = Paleta.Superficie,
+    unfocusedContainerColor = Paleta.Superficie,
+    focusedTextColor = Paleta.Texto,
+    unfocusedTextColor = Paleta.Texto,
     errorBorderColor = Paleta.Error,
     errorLabelColor = Paleta.Error,
 )
