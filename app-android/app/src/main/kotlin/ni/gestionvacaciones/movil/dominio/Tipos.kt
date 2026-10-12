@@ -9,7 +9,7 @@ package ni.gestionvacaciones.movil.dominio
  */
 enum class TipoSolicitud(val etiqueta: String, val seCuentaEnDias: Boolean, val icono: String) {
     VACACIONES("Vacaciones", true, "🏖"),
-    CITA_MEDICA("Cita médica", false, "⚕"),
+    CITA_MEDICA("Cita médica", false, "🏥"),
     PERMISO("Permiso", false, "📝");
 
     /** "5 días" para vacaciones; "2 horas y 30 minutos" para citas y permisos. */
