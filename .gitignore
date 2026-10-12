@@ -6,6 +6,7 @@ target/
 *.jar
 *.war
 !.mvn/wrapper/maven-wrapper.jar
+!app-android/gradle/wrapper/gradle-wrapper.jar
 .mvn/timing.properties
 
 # ---------------------------------------------------------------------------
@@ -20,6 +21,25 @@ target/
 *.dump.parcial
 *.pem
 *.key
+
+# Firma de la app Android: si alguien la tiene, puede publicar versiones
+# falsas de la app que el celular aceptaría como actualizaciones legítimas.
+*.jks
+*.keystore
+app-android/firma.properties
+
+# Respaldos que exporta la app del celular: tienen datos de los funcionarios
+respaldo-vacaciones-*.json
+
+# ---------------------------------------------------------------------------
+# App Android (Gradle)
+# ---------------------------------------------------------------------------
+app-android/.gradle/
+app-android/.kotlin/
+app-android/build/
+app-android/app/build/
+# Ruta del SDK en cada computadora: no es igual en todas.
+app-android/local.properties
 
 # ---------------------------------------------------------------------------
 # Herramientas de interfaz (Tailwind se instala local, no se versiona)

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="fondo">#FF05060E</color>
+    <color name="superficie">#FF12163A</color>
+    <color name="acento">#FFB14AED</color>
+</resources>
