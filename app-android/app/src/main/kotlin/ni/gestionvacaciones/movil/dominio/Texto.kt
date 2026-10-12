@@ -31,6 +31,9 @@ object Texto {
         return limpio.substringBefore(' ')
     }
 
+    /** "1 funcionario", "3 funcionarios": nunca "1 funcionarios". */
+    fun cantidad(n: Int, singular: String, plural: String): String = if (n == 1) "1 $singular" else "$n $plural"
+
     /** "Ángela Pérez Núñez" → "angela-perez-nunez", para nombres de archivo. */
     fun nombreDeArchivo(nombre: String): String {
         val limpio = normalizar(nombre).replace(Regex("[^a-z0-9]+"), "-").trim('-')

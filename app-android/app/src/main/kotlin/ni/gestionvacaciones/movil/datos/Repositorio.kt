@@ -462,7 +462,8 @@ class Repositorio(
         r.insertarBitacora(contenido.bitacora)
         anotar(
             AccionBitacora.RESPALDO_RESTAURADO,
-            "$nombreArchivo · ${contenido.funcionarios.size} funcionarios, ${contenido.solicitudes.size} solicitudes",
+            "$nombreArchivo · ${Texto.cantidad(contenido.funcionarios.size, "funcionario", "funcionarios")}, " +
+                Texto.cantidad(contenido.solicitudes.size, "solicitud", "solicitudes"),
         )
     }
 }

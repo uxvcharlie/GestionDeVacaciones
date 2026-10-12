@@ -35,6 +35,7 @@ import ni.gestionvacaciones.movil.dominio.ConversorTiempo
 import ni.gestionvacaciones.movil.dominio.Fechas
 import ni.gestionvacaciones.movil.dominio.PoliticaPin
 import ni.gestionvacaciones.movil.dominio.ReglaDeNegocioException
+import ni.gestionvacaciones.movil.dominio.Texto
 import ni.gestionvacaciones.movil.reporte.ArchivoGenerado
 import ni.gestionvacaciones.movil.reporte.FormatoReporte
 import ni.gestionvacaciones.movil.reporte.Reportes
@@ -206,7 +207,8 @@ fun PantallaRespaldo(rutas: Rutas) {
         val creado = contenido.bitacora.maxOfOrNull { it.creadoEn }
         DialogoConfirmacion(
             titulo = "¿Reemplazar todos los datos?",
-            texto = "El respaldo «$nombre» tiene ${contenido.funcionarios.size} funcionarios y ${contenido.solicitudes.size} solicitudes" +
+            texto = "El respaldo «$nombre» tiene ${Texto.cantidad(contenido.funcionarios.size, "funcionario", "funcionarios")} y " +
+                "${Texto.cantidad(contenido.solicitudes.size, "solicitud", "solicitudes")}" +
                 (creado?.let { ", con actividad hasta el ${Fechas.fechaHora(it, p.zona)}" } ?: "") +
                 ". Todo lo que hay ahora en este celular se va a reemplazar por eso. No se puede deshacer.",
             confirmar = "Sí, restaurar",
@@ -217,7 +219,10 @@ fun PantallaRespaldo(rutas: Rutas) {
                 alcance.launch {
                     when (val r = intentar { repo.restaurar(contenido, nombre) }) {
                         is Resultado.Bien -> {
-                            avisar("Listo: se restauraron ${contenido.funcionarios.size} funcionarios y ${contenido.solicitudes.size} solicitudes.")
+                            avisar(
+                                "Listo: se restauraron ${Texto.cantidad(contenido.funcionarios.size, "funcionario", "funcionarios")} y " +
+                                    "${Texto.cantidad(contenido.solicitudes.size, "solicitud", "solicitudes")}.",
+                            )
                             rutas.tablero()
                         }
                         is Resultado.Mal -> errorRestaurar = r.mensaje

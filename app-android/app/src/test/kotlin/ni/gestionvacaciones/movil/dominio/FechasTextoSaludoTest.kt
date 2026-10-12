@@ -64,6 +64,13 @@ class FechasTextoSaludoTest {
     }
 
     @Test
+    fun `los plurales no dicen 1 funcionarios`() {
+        assertEquals("1 funcionario", Texto.cantidad(1, "funcionario", "funcionarios"))
+        assertEquals("0 funcionarios", Texto.cantidad(0, "funcionario", "funcionarios"))
+        assertEquals("3 solicitudes", Texto.cantidad(3, "solicitud", "solicitudes"))
+    }
+
+    @Test
     fun `primer nombre y nombre de archivo`() {
         assertEquals("Brenda", Texto.primerNombre("Brenda Vásquez"))
         assertEquals("angela-perez-nunez", Texto.nombreDeArchivo("Ángela Pérez Núñez"))

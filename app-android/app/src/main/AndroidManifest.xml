@@ -2,9 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
-      La app NO pide ningún permiso: ni internet, ni almacenamiento, ni
-      cámara. Todo vive dentro del celular, y los archivos se guardan o
-      comparten con los selectores propios de Android.
+      La app no le pide ningún permiso a la persona: ni internet, ni
+      almacenamiento, ni cámara. Todo vive dentro del celular, y los archivos
+      se guardan o comparten con los selectores propios de Android.
+      (La biblioteca AndroidX agrega sola un permiso interno, de uso exclusivo
+      de esta app, que no se muestra ni se pide a nadie.)
     -->
 
     <application
