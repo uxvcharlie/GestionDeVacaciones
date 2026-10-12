@@ -8,7 +8,7 @@ celular**.
 
 ## 1. Instalar la app (una sola vez)
 
-1. Te van a mandar un archivo que se llama **Vacaciones-1.0.0.apk** (por
+1. Te van a mandar un archivo que se llama algo como **Vacaciones-1.0.1.apk** (por
    WhatsApp, correo o Drive).
 2. Tocá el archivo para abrirlo.
 3. El celular te va a decir algo como *«Por tu seguridad, tu teléfono no puede

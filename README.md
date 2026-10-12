@@ -538,7 +538,7 @@ Neon, sin esperar a que nada despierte y gratis para siempre.
 ### Instalarla en el celular de alguien
 
 1. Generá el APK (abajo) o usá el que ya está compilado.
-2. Mandá el archivo `Vacaciones-1.0.0.apk` por WhatsApp, correo o Drive.
+2. Mandá el archivo `Vacaciones-<versión>.apk` (por ejemplo `Vacaciones-1.0.1.apk`) por WhatsApp, correo o Drive.
 3. En el celular: tocar el archivo → **Permitir de esta fuente** → **Instalar**.
    Si aparece Play Protect: **Instalar de todas formas** (pasa con toda app que
    no viene de Play Store).
