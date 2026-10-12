@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Única carpeta que la app puede pasarle a otras apps (WhatsApp, Drive, correo)
+  al compartir un reporte o un respaldo. Es una carpeta temporal privada: los
+  datos de la base nunca se exponen.
+-->
+<paths>
+    <cache-path name="compartidos" path="compartidos/" />
+</paths>
