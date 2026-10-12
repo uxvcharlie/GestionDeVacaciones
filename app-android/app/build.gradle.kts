@@ -108,3 +108,13 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
 }
+
+// Robolectric simula Android dentro de la computadora y, para simular los
+// archivos, necesita tocar una parte interna de Java que Java 17+ esconde.
+// Solo afecta a las pruebas: la app instalada nunca corre con esto.
+tasks.withType<Test>().configureEach {
+    jvmArgs(
+        "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+    )
+}
