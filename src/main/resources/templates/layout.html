@@ -11,7 +11,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="dark">
+    <meta name="color-scheme" content="light">
     <title th:text="${titulo} + ' · Registro de Vacaciones'">Registro de Vacaciones</title>
 
     <!--
@@ -25,6 +25,21 @@
     <meta th:if="${usuarioActual != null}" name="sesion-minutos" th:content="${minutosSesion}">
 
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
+
+    <!--
+      Aplicación instalable en el celular. Con esto, "Instalar aplicación"
+      (Android) o "Agregar a inicio" (iPhone) crean un ícono propio que abre
+      el sistema a pantalla completa, sin la barra del navegador.
+    -->
+    <link rel="manifest" th:href="@{/manifest.json}">
+    <meta name="theme-color" content="#112B3C">
+    <link rel="icon" th:href="@{/iconos/icono.svg}" type="image/svg+xml">
+    <link rel="icon" th:href="@{/favicon.ico}" sizes="32x32">
+    <link rel="apple-touch-icon" th:href="@{/iconos/apple-touch-icon.png}">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Vacaciones">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
     <!-- Todo se sirve desde la propia aplicación: nada de CDN. -->
     <script th:src="@{/js/htmx.min.js}" defer></script>

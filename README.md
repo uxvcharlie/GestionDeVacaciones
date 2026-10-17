@@ -7,8 +7,21 @@ Es un **registro**, no un trámite: el permiso ya fue autorizado fuera del
 sistema y acá solo se anota, se descuenta del saldo y queda el historial. No
 hay estados "pendiente", "aprobado" ni "rechazado".
 
-- **Manual para quien usa el sistema:** [docs/manual-brenda.md](docs/manual-brenda.md)
-- **Repaso de seguridad:** [docs/seguridad.md](docs/seguridad.md)
+Hay **dos versiones** que hacen lo mismo con las mismas reglas:
+
+| | Aplicación web | App para celular (Android) |
+|---|---|---|
+| Dónde viven los datos | En el servidor (Neon) | **Dentro del celular** |
+| Necesita internet | Sí | **No** |
+| Quién entra | Usuarios con contraseña | Una persona, con PIN de 4 dígitos |
+| Código | raíz del repositorio (Java) | [`app-android/`](app-android) (Kotlin) |
+| Manual | [docs/manual-brenda.md](docs/manual-brenda.md) | [docs/manual-app-celular.md](docs/manual-app-celular.md) |
+
+> **Las dos versiones NO se sincronizan.** Son dos bases de datos separadas.
+> Hay que elegir una y usar solo esa; si se usan las dos, los saldos van a
+> diferir. Ver [App para celular](#app-para-celular-android-sin-internet).
+
+- **Repaso de seguridad (web):** [docs/seguridad.md](docs/seguridad.md)
 
 ---
 
@@ -332,10 +345,45 @@ Una vez desplegado en Render, **cualquier computadora o celular con internet**
 lo abre en `https://gestion-vacaciones-XXXX.onrender.com`. No hay nada que
 instalar.
 
-Para abrirlo como una aplicación desde el celular:
+### Instalarlo como aplicación en el celular
 
-- **Android (Chrome):** menú ⋮ → **Agregar a la pantalla principal**.
-- **iPhone (Safari):** botón Compartir → **Agregar a inicio**.
+> Esto instala la **web** con ícono propio: necesita internet y los datos están
+> en el servidor. Para la app que funciona **sin internet** y guarda los datos
+> en el teléfono, ver [App para celular](#app-para-celular-android-sin-internet).
+> No conviene usar las dos: no se sincronizan.
+
+El sistema es una **aplicación instalable** (PWA): queda con su propio ícono
+(el rombo ◆), se abre a pantalla completa sin la barra del navegador y aparece
+en la lista de aplicaciones del teléfono. **No pasa por Play Store ni App
+Store, no cuesta nada y se actualiza sola**: cada vez que se despliega una
+versión nueva en Render, el celular la usa en la siguiente apertura.
+
+- **Android (Chrome):** abrí la dirección → menú ⋮ → **Instalar aplicación**
+  (en algunos celulares dice **Agregar a la pantalla principal** → **Instalar**).
+- **iPhone (Safari, obligatorio Safari):** abrí la dirección → botón
+  Compartir □↑ → **Agregar a inicio** → **Agregar**.
+
+Requisito: tiene que abrirse por **HTTPS**, o sea la dirección de Render. Por
+`http://192.168.x.x` (la red de la oficina) se ve igual, pero el celular **no**
+ofrece instalarla: los navegadores solo permiten instalar aplicaciones desde
+sitios seguros.
+
+Qué guarda el celular y qué no:
+
+- **No guarda ningún dato** de funcionarios, saldos ni solicitudes. Todo se
+  pide al servidor cada vez. Si el teléfono se pierde, no hay nada que robar
+  en él, y nunca se ve un saldo viejo.
+- Sí guarda los colores, el ícono y una pantalla de **"No hay conexión a
+  internet"** con un botón para reintentar, en vez del error del navegador.
+
+Archivos de la aplicación instalable:
+
+| Archivo | Para qué |
+|---|---|
+| `static/manifest.json` | Nombre, ícono, colores y pantalla completa |
+| `static/sw.js` | Service worker: pantalla sin conexión y copia de estilos |
+| `static/sin-conexion.html` | Lo que se ve sin internet |
+| `static/iconos/` | Íconos; se regeneran con `./scripts/generar-iconos.sh` |
 
 ### En la red de la oficina, desde tu computadora (solo para probar)
 
@@ -463,6 +511,124 @@ de Neon → Branches → Restore).
 
 ---
 
+## App para celular (Android, sin internet)
+
+Una app nativa de Android con **las mismas reglas que la web**, pensada para
+usarse en un solo celular y sin depender de ningún servidor: sin Render, sin
+Neon, sin esperar a que nada despierte y gratis para siempre.
+
+### Qué cambia respecto de la web
+
+- **Los datos viven en el celular** (SQLite, a través de Room). Ninguna otra
+  app puede leerlos. Por eso el **respaldo semanal es obligatorio**: la app lo
+  recuerda en el tablero si pasa una semana sin hacerlo.
+- **No hay usuarios ni contraseñas**: entra una sola persona con un **PIN de 4
+  dígitos**. 5 equivocaciones bloquean 15 minutos. Se pide al abrir la app y
+  después de 30 minutos sin uso (con aviso un minuto antes).
+- **Tu especificación prohibía SQLite** como solución final. Esa regla tenía
+  sentido en un servidor; en una app sin internet la base tiene que vivir en el
+  teléfono, y Android usa SQLite por dentro. Es la única excepción.
+- **Se ve igual que la web:** la misma paleta clara (azul marino, azul,
+  naranja y gris claro), con los mismos contrastes verificados.
+- Todo lo demás es igual: minutos enteros, saldo único para los tres tipos,
+  negativo solo con autorización y motivo, anulación con reversión, ajuste
+  manual con motivo, baja lógica, bitácora, reportes en Excel y CSV, fechas
+  dd/MM/yyyy y hora de 12 horas en la zona de Managua, español siempre.
+
+### Instalarla en el celular de alguien
+
+1. Generá el APK (abajo) o usá el que ya está compilado.
+2. Mandá el archivo `Vacaciones-<versión>.apk` (por ejemplo `Vacaciones-1.0.1.apk`) por WhatsApp, correo o Drive.
+3. En el celular: tocar el archivo → **Permitir de esta fuente** → **Instalar**.
+   Si aparece Play Protect: **Instalar de todas formas** (pasa con toda app que
+   no viene de Play Store).
+
+Funciona desde **Android 8.0** (2017) en adelante. No pide ningún permiso.
+
+El paso a paso para quien la usa está en
+[docs/manual-app-celular.md](docs/manual-app-celular.md).
+
+### Actualizarla
+
+Se sube `versionCode` y `versionName` en `app-android/app/build.gradle.kts`, se
+compila de nuevo y se manda el APK nuevo. Al instalarlo encima, **los datos se
+conservan**. Esto solo funciona si el APK nuevo está firmado con **la misma
+clave** que el anterior.
+
+### La clave de firma: no la pierdas
+
+Android solo acepta una actualización si viene firmada con la misma clave que
+la versión instalada. La clave está **fuera del repositorio**:
+
+```
+~/Android/firmas/gestion-vacaciones.jks   ← la clave
+~/Android/firmas/firma.properties         ← su ubicación y contraseña
+```
+
+`app-android/firma.properties` es una copia de ese último archivo; está en
+`.gitignore` y nunca se sube. **Guardá la carpeta `~/Android/firmas/` en un
+lugar seguro fuera de esta computadora** (un pendrive, tu Drive personal). Si
+se pierde, la única forma de instalar una versión nueva es desinstalar la
+anterior, y eso borra los datos del celular: habría que restaurarlos desde un
+respaldo.
+
+### Compilar
+
+Herramientas, instaladas en tu carpeta personal (sin `sudo`):
+
+| Qué | Dónde |
+|---|---|
+| JDK Temurin 21 | `~/Android/jdk-21` |
+| Android SDK (plataforma 37.2, build-tools 36.1) | `~/Android/Sdk` |
+
+Para instalarlas en otra computadora: el JDK desde
+[adoptium.net](https://adoptium.net) y las *command line tools* del SDK desde
+[developer.android.com/studio](https://developer.android.com/studio#command-line-tools-only);
+después `sdkmanager "platform-tools" "platforms;android-37.2" "build-tools;36.1.0"`.
+Android Studio también sirve: abrí la carpeta `app-android/`.
+
+Con eso, un solo comando corre las pruebas y deja el APK firmado:
+
+```bash
+cd app-android
+./compilar-apk.sh
+```
+
+Otros comandos útiles:
+
+```bash
+export JAVA_HOME=~/Android/jdk-21 ANDROID_HOME=~/Android/Sdk
+./gradlew :app:testDebugUnitTest   # 65 pruebas, sin celular ni emulador
+./gradlew :app:assembleDebug       # APK de depuración, para probar
+```
+
+### Pruebas
+
+- **Reglas de negocio** (`dominio/`): Kotlin puro, sin Android. Incluyen el
+  ejemplo de Brenda: 10 días → 9 días → 8 días y 6 horas.
+- **Base de datos** (`datos/`): con Robolectric, contra SQLite real. Verifican
+  que el saldo de cada funcionario sea siempre la suma de sus movimientos, que
+  un respaldo se restaure idéntico en otro celular y que uno alterado se
+  rechace.
+- La app se probó a mano en un emulador con Android 16: primer uso, PIN,
+  alta, el ejemplo de Brenda completo, saldo insuficiente, anulación,
+  reportes (el Excel se abrió con una biblioteca real), respaldo, restauración
+  e instalación de una versión nueva encima de la anterior.
+
+### Cómo está organizada
+
+```
+app-android/app/src/main/kotlin/ni/gestionvacaciones/movil/
+├── dominio/     reglas de negocio en Kotlin puro (copia fiel de la web)
+├── datos/       base de datos Room, repositorio (único que cambia saldos) y respaldo
+├── reporte/     reportes en Excel y CSV, escritos sin bibliotecas externas
+├── acceso/      PIN, intentos fallidos y bloqueo por inactividad
+└── ui/          pantallas en Jetpack Compose, tema y componentes
+app-android/app/esquemas/   foto del esquema de la base (equivale a Flyway)
+```
+
+---
+
 ## Cómo está organizado
 
 ```
@@ -512,6 +678,12 @@ render.yaml          descripción del servicio en Render
   mucho más para una aplicación con 512 MB de RAM.
 - **Sin CDN ni fuentes remotas:** la oficina puede tener internet limitado, y la
   política de seguridad del navegador solo permite archivos propios.
+- **App de celular en Kotlin con Jetpack Compose y Room:** es lo que Google
+  recomienda hoy para Android, y Kotlin se lee casi como Java. Las reglas son
+  una copia fiel de las de la web, con sus mismas pruebas.
+- **El Excel de la app se escribe a mano** (un `.xlsx` es un zip con XML): la
+  biblioteca de la web no está garantizada en Android y así no se suman
+  dependencias.
 
 ---
 
@@ -523,3 +695,4 @@ render.yaml          descripción del servicio en Render
 - [x] **Fase 4** — Interfaz: tablero, aviso de sesión, errores amables, reactivación.
 - [x] **Fase 5** — Administración y seguridad: usuarios, bitácora, parámetros, bloqueo por intentos.
 - [x] **Fase 6** — Despliegue: Docker, Neon, Render, GitHub Actions, reportes, respaldos y manual.
+- [x] **Fase 7** — App para celular Android, sin internet: mismas reglas, PIN, respaldo a archivo y APK firmado.

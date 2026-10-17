@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      La app no le pide ningún permiso a la persona: ni internet, ni
+      almacenamiento, ni cámara. Todo vive dentro del celular, y los archivos
+      se guardan o comparten con los selectores propios de Android.
+      (La biblioteca AndroidX agrega sola un permiso interno, de uso exclusivo
+      de esta app, que no se muestra ni se pide a nadie.)
+    -->
+
+    <application
+        android:name=".AppVacaciones"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:label="@string/nombre_app"
+        android:supportsRtl="true"
+        android:theme="@style/Tema.Vacaciones">
+
+        <activity
+            android:name=".ActividadPrincipal"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Pasa reportes y respaldos a WhatsApp, Drive o correo, solo cuando Brenda lo pide. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.archivos"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/rutas_archivos" />
+        </provider>
+    </application>
+</manifest>

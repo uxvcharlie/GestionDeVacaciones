@@ -233,3 +233,16 @@ window.addEventListener('pageshow', function (evento) {
     }, 1000);
 })();
 
+
+// ---------------------------------------------------------------------------
+// Aplicación instalable en el celular: registra el service worker (sw.js).
+// Si el navegador no lo soporta o falla, el sistema funciona igual; solo no
+// se podrá instalar como aplicación.
+// ---------------------------------------------------------------------------
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js').catch(function () {
+            // Sin service worker no se pierde nada: se usa desde el navegador.
+        });
+    });
+}

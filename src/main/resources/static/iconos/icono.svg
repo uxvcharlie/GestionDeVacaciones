@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Ícono de la aplicación: el rombo ◆ del encabezado, con la paleta del proyecto. -->
+  <rect width="512" height="512" rx="112" fill="#112B3C"/>
+  <rect x="8" y="8" width="496" height="496" rx="104" fill="none" stroke="#205375" stroke-width="16"/>
+  <path d="M256 92 L420 256 L256 420 L92 256 Z" fill="#F66B0E"/>
+</svg>
